@@ -18,15 +18,28 @@ from templates import APNs
 #     APNs.sendPushNotification();
 #     return 'sendNotification success'
 
-@app.route('/deleteTables',methods=['GET','POST'])
-def deletetables():
-    sqlmodel.deleteTables(engine)
-    return 'deleteTables'
+# @app.route('/deleteTables',methods=['GET','POST'])
+# def deletetables():
+#     sqlmodel.deleteTables(engine)
+#     return 'deleteTables'
+#
+# @app.route('/createtables',methods=['GET','POST'])
+# def createtables():
+#     sqlmodel.createTables(engine)
+#     return 'createables'
 
-@app.route('/createtables',methods=['GET','POST'])
-def createtables():
-    sqlmodel.createTables(engine)
-    return 'createables'
+@app.route('/points',methods=['POST'])
+def points():
+    if(request.method == 'POST'):
+        name = request.form['username']
+        print name
+        u = sqlmodel.points(name)
+        print u.pwd
+        if u:
+            return jsonify({'points':u.points})
+        else:
+            return jsonify({'error':1})
+    return jsonify({'status': 2})
 
 @app.route('/users',methods=['GET','POST'])
 def users():
