@@ -20,6 +20,29 @@ def addItem(name,email):
         return 'wrong（key repeat）'
     return 'Add %s user successfully' % name
 
+
+
+#更新积分接口
+#如果paras ＝ 0 表示查询当前积分
+#如果paras > 0 表示更改当前积分
+def points(name,paras):
+    print 'paras:',paras
+    if paras == 0:
+        try:
+            u = User.query.filter(User.name == name).first()
+        except Exception, e:
+            return 'there isnot %s' % name
+        return u
+    elif paras > 0:
+        try:
+            u = User.query.filter(User.name == name).first()
+            u.points = paras
+            db_session.commit()
+        except Exception, e:
+            return 'there isnot %s' % name
+        return u
+
+
 #登录接口
 #
 def login(name,pwd):

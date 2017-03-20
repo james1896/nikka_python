@@ -28,18 +28,26 @@ from templates import APNs
 #     sqlmodel.createTables(engine)
 #     return 'createables'
 
-@app.route('/points',methods=['POST'])
-def points():
-    if(request.method == 'POST'):
-        name = request.form['username']
-        print name
-        u = sqlmodel.points(name)
-        print u.pwd
-        if u:
-            return jsonify({'points':u.points})
-        else:
-            return jsonify({'error':1})
-    return jsonify({'status': 2})
+@app.route('/points/<username>/<paras>',methods=['GET','POST'])
+def points(username,paras):
+    # if(request.method == 'POST'):
+    #     name = request.form['username']
+    #     print name
+    #     u = sqlmodel.points(name)
+    #     print u.pwd
+    #     if u:
+    #         return jsonify({'points':u.points})
+    #     else:
+    #         return jsonify({'error':1})
+    # return jsonify({'status': 2})
+    u = sqlmodel.points(username,paras)
+    print u
+    if u:
+        return jsonify({'status': u.points})
+    else:
+        return jsonify({'status': 2})
+
+
 
 @app.route('/users',methods=['GET','POST'])
 def users():
