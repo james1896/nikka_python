@@ -10,6 +10,7 @@ from templates.RSACipher import random_generator
 from flask import request
 from flask import jsonify
 from config import engine
+import json
 
 from templates import APNs
 
@@ -28,8 +29,9 @@ from templates import APNs
 #     sqlmodel.createTables(engine)
 #     return 'createables'
 
-@app.route('/points/<username>/<paras>',methods=['GET','POST'])
-def points(username,paras):
+
+@app.route('/points',methods=['POST'])
+def points():
     # if(request.method == 'POST'):
     #     name = request.form['username']
     #     print name
@@ -40,12 +42,20 @@ def points(username,paras):
     #     else:
     #         return jsonify({'error':1})
     # return jsonify({'status': 2})
-    u = sqlmodel.points(username,paras)
-    print u
-    if u:
-        return jsonify({'status': u.points})
-    else:
-        return jsonify({'status': 2})
+    # name = request.form['username']
+    # para = request.form['paras']
+    # print 'name:', name, 'para', para
+    if request.method == 'POST':
+        name = request.form['username']
+        para = request.form['paras']
+        u = sqlmodel.points(name,para)
+        print '积分:',u.points
+        if u:
+            return jsonify({'points': u.points})
+        else:
+            return jsonify({'points': 2})
+    return jsonify({'points': -1})
+
 
 
 
@@ -55,32 +65,45 @@ def users():
 
 @app.route('/login',methods=['POST'])
 def login():
-    if request.method == 'POST':
-        name = RSACipher.decryptionWithString(request.form['username'],random_generator)
-        pwd  = RSACipher.decryptionWithString(request.form['password'],random_generator)
-
-        user = sqlmodel.login(name,pwd)
+    # if request.method == 'POST':
+    #     name = RSACipher.decryptionWithString(request.form['username'],random_generator)
+    #     pwd  = RSACipher.decryptionWithString(request.form['password'],random_generator)
+    #
+    #     user = sqlmodel.login(name,pwd)
+    #     if user:
+    #         return jsonify({'status':1,'data':{'points':user.points}})
+    dict = handlePOSTData()
+    if dict.has_key('username') and dict.has_key('password'):
+        user = sqlmodel.login(dict['username'],dict['password'])
         if user:
             return jsonify({'status':1,'data':{'points':user.points}})
-
     return jsonify({'status':2})
 
 @app.route('/test',methods=['GET','POST'])
 def test():
-
-    m2 = hashlib.md5()
-    m2.update('hello')
-    print m2.hexdigest()
-    return m2.hexdigest()
+    # m2 = hashlib.md5()
+    # m2.update('hello')
+    # print m2.hexdigest()
+    # return m2.hexdigest()
     # if request.method == 'POST':
-    #     print request.form['name']
-    #     return jsonify({'obj':RSACipher.decryptionWithString(request.form['name'],random_generator)})
-    #
-    # if request.method == 'GET':
-    #     return jsonify({'obj':RSACipher.decryptionWithString(request.args.get('name'),random_generator)})
-    #
-    # return jsonify({'error':1})
+        # value = RSACipher.decryptionWithString(request.form.get('value'),random_generator)
+        # #得到前端 post 过来的 json字符串
+        # # data = json.dumps(request.form.get('value'))
+        # #data为字典类型
+        # dict = json.loads(value)
+        dict = handlePOSTData()
+        if dict.has_key('a'):
+            print dict['a']
+        return jsonify(dict)
 
+def handlePOSTData():
+    if request.method == 'POST':
+        # 得到前端 post 过来的 json字符串
+        # data = json.dumps(request.form.get('value'))
+        # data为字典类型
+        value = RSACipher.decryptionWithString(request.form.get('value'), random_generator)
+        dict = json.loads(value)
+        return dict
 
 @app.route('/updatersakeypairs')
 def updateRsaKeypairs():
