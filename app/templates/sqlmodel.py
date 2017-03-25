@@ -24,7 +24,15 @@ def addItem(name,email):
     return 'Add %s user successfully' % name
 
 
-
+def addOrder(deal_time,deal_Prce,goods_name):
+    user_id = 1
+    order = Order(user_id=user_id,deal_time=deal_time,deal_Prce=deal_Prce,goods_name=goods_name)
+    try:
+        db_session.add(order)
+        db_session.commit()
+    except Exception,e:
+        return 0
+    return 1
 #更新积分接口
 
 #如果paras ＝ 0 表示查询当前积分
@@ -351,13 +359,15 @@ class Order(Base):
     deal_Prce   = Column(Float,unique=True)
     goods_name  = Column(String(30),unique=True)
 
-
     user_id = Column(Integer, ForeignKey('users.id'))
 
-    def __init__(self, name=None,pwd=None,user_id=None):
-        self.name = name
-        self.pwd = pwd
+    def __init__(self, user_id=None,deal_time=None,deal_Prce=None,goods_name=None):
         self.user_id = user_id
+        self.deal_time = deal_time
+        self.deal_Prce = deal_Prce
+        self.goods_name = goods_name
+
+        self.order_id = 100000
 
     # def __init__(self, name=None,pwd=None,email=None):
     #     self.name = name
@@ -370,4 +380,4 @@ class Order(Base):
     #     self.points = points
 
     def __repr__(self):
-        return '%s (%r, %r)' % (self.__class__.__name__, self.name, self.email)
+        return '%s (%r, %r)' % (self.__class__.__name__, self.user_id, self.goods_name)

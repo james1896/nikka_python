@@ -65,6 +65,14 @@ def users():
     return jsonify({'users':sqlmodel.userCount()})
     # return jsonify({'time':time.time()})
 
+@app.route('/order',methods=['GET'])
+def order():
+    deal_time = '2017.3.25'
+    deal_Prce = 2.0
+    goods_name = 'fruit'
+    flag = sqlmodel.addOrder(deal_time,deal_Prce, goods_name)
+    return jsonify({'status':flag})
+
 
 ###########################    register    #############################################
 
