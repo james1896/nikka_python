@@ -75,7 +75,7 @@ def register():
     if dict.has_key('username') and dict.has_key('password'):
         user = sqlmodel.register(dict['username'],dict['password'])
         if user:
-            return jsonify({'status':1})
+            return jsonify({'status':1,'user_id':user.user_id})
     return jsonify({'status':2})
 ###########################    login    #############################################
 
@@ -93,7 +93,7 @@ def login():
     if dict.has_key('username') and dict.has_key('password'):
         user = sqlmodel.login(dict['username'],dict['password'])
         if user:
-            return jsonify({'status':1,'data':{'points':user.points}})
+            return jsonify({'status':1,'user_id':user.user_id,'data':{'points':user.points}})
     return jsonify({'status':2})
 
 
