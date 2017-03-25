@@ -9,7 +9,7 @@ from templates.RSACipher import random_generator
 
 from flask import request
 from flask import jsonify
-from config import engine
+
 import json
 
 from templates import APNs
@@ -61,7 +61,9 @@ def points():
 
 @app.route('/users',methods=['GET','POST'])
 def users():
+
     return jsonify({'users':sqlmodel.userCount()})
+    # return jsonify({'time':time.time()})
 
 
 ###########################    register    #############################################

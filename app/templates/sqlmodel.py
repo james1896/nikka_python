@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from MySQLdb.constants.REFRESH import LOG
-from sqlalchemy import Boolean
+from sqlalchemy import Boolean, Float,ForeignKey
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import DateTime
 from sqlalchemy import MetaData
 from sqlalchemy import Table
-
 from config import Base, db_session
+
+import time
+
+
 
 
 
@@ -30,6 +33,7 @@ def points(name,paras):
     if int(paras) == 0:
         try:
             u = User.query.filter(User.name == name).first()
+            print 'userName:',u.name,'积分',u.points
         except Exception, e:
             return 'there isnot %s' % name
         return u
@@ -46,17 +50,14 @@ def points(name,paras):
 #注册接口
 #
 def register(name,pwd):
-    u = User(name = name, pwd= pwd)
+    # user_id = ticks%10000*100000*1000+1*1000
+    u = User(name = name, pwd= pwd,user_id=int(time.time()))
     try:
         db_session.add(u)
         db_session.commit()
         return u
     except Exception,e:
         return None
-
-
-
-
 
 #登录接口
 #
@@ -296,36 +297,77 @@ def downgrade(migrate_engine):
     # 1
     # 就能够对现有的数据库进行更新.
 
-##############################################################################
-
 
 #查询user表中有多少条数据
 def userCount():
     return db_session.query(User).filter_by().count()
+
+
+#########################   mysql表结构    #####################################################
+
+
+
 
 class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True)
-    email = Column(String(120), unique=False)
     pwd = Column(String(120), unique=False)
-    points = Column(String(120), unique=False)
+    user_id = Column(Integer, unique=True)
+    email = Column(String(120), unique=False)
+    points = Column(Float, unique=False)
 
 
-    def __init__(self, name=None,pwd=None):
+    def __init__(self, name=None,pwd=None,user_id=None):
         self.name = name
         self.pwd = pwd
+        self.user_id = user_id
+        self.email = None
+        self.points = 0.0
 
-    def __init__(self, name=None,pwd=None,email=None):
+
+    # def __init__(self, name=None,pwd=None,email=None):
+    #     self.name = name
+    #     self.pwd = pwd
+    #     self.email = email
+    #
+    # def __init__(self, name=None,pwd=None,points=None):
+    #     self.name = name
+    #     self.pwd = pwd
+    #     self.points = points
+
+    def __repr__(self):
+        return '%s (%r, %r)' % (self.__class__.__name__, self.name, self.email)
+
+
+
+class Order(Base):
+    __tablename__ = 'orders'
+
+    id          = Column(Integer, primary_key=True)
+    order_id    = Column(Integer, unique=True)
+    deal_time   = Column(String(120), unique=True)
+    deal_Prce   = Column(Float,unique=True)
+    goods_name  = Column(String(30),unique=True)
+
+
+    user_id = Column(Integer, ForeignKey('users.id'))
+
+    def __init__(self, name=None,pwd=None,user_id=None):
         self.name = name
         self.pwd = pwd
-        self.email = email
+        self.user_id = user_id
 
-    def __init__(self, name=None,pwd=None,points=None):
-        self.name = name
-        self.pwd = pwd
-        self.points = points
+    # def __init__(self, name=None,pwd=None,email=None):
+    #     self.name = name
+    #     self.pwd = pwd
+    #     self.email = email
+    #
+    # def __init__(self, name=None,pwd=None,points=None):
+    #     self.name = name
+    #     self.pwd = pwd
+    #     self.points = points
 
     def __repr__(self):
         return '%s (%r, %r)' % (self.__class__.__name__, self.name, self.email)

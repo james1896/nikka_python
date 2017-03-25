@@ -9,6 +9,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    #初始化数据库（如果没有旧创建 ，如果有就忽略）
+    init_db()
     return 'Nikka/ app'
 
 
