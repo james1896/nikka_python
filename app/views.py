@@ -65,6 +65,16 @@ def users():
     return jsonify({'users':sqlmodel.userCount()})
     # return jsonify({'time':time.time()})
 
+@app.route('/record/<user_id>',methods=['GET','POST'])
+def record(user_id):
+    # dict = handlePOSTData()
+    # if dict.has_key('user_id'):
+    #     sqlmodel.record(dict['user_id'])
+    sqlmodel.record(user_id)
+    return jsonify({'status':1})
+
+###########################    order For Master    #############################################
+
 @app.route('/order',methods=['GET'])
 def order():
     deal_time = '2017.3.25'

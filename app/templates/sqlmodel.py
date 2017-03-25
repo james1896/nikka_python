@@ -23,6 +23,13 @@ def addItem(name,email):
         return 'wrong（key repeat）'
     return 'Add %s user successfully' % name
 
+def record(user_id):
+    try:
+        order = Order.query.filter(Order.user_id == user_id).all()
+        print 'orderdsafda:',len(order)
+    except Exception, e:
+        return 'there isnot %s'
+    return order
 
 def addOrder(deal_time,deal_Prce,goods_name):
     user_id = 1
