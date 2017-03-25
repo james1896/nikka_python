@@ -43,6 +43,20 @@ def points(name,paras):
             return 'there isnot %s' % name
         return u
 
+#注册接口
+#
+def register(name,pwd):
+    u = User(name = name, pwd= pwd)
+    try:
+        db_session.add(u)
+        db_session.commit()
+        return u
+    except Exception,e:
+        return None
+
+
+
+
 
 #登录接口
 #
@@ -294,7 +308,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True)
-    email = Column(String(120), unique=True)
+    email = Column(String(120), unique=False)
     pwd = Column(String(120), unique=False)
     points = Column(String(120), unique=False)
 

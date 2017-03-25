@@ -63,6 +63,21 @@ def points():
 def users():
     return jsonify({'users':sqlmodel.userCount()})
 
+
+###########################    register    #############################################
+
+
+@app.route('/register',methods=['POST'])
+def register():
+    dict = handlePOSTData()
+    if dict.has_key('username') and dict.has_key('password'):
+        user = sqlmodel.register(dict['username'],dict['password'])
+        if user:
+            return jsonify({'status':1})
+    return jsonify({'status':2})
+###########################    login    #############################################
+
+
 @app.route('/login',methods=['POST'])
 def login():
     # if request.method == 'POST':
@@ -78,6 +93,10 @@ def login():
         if user:
             return jsonify({'status':1,'data':{'points':user.points}})
     return jsonify({'status':2})
+
+
+############################    test    #############################################
+
 
 @app.route('/test',methods=['GET','POST'])
 def test():
