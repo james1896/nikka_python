@@ -9,8 +9,9 @@ from templates.RSACipher import random_generator
 
 from flask import request
 from flask import jsonify
+from config import engine
 
-import json
+import json,random
 
 from templates import APNs
 
@@ -29,6 +30,10 @@ from templates import APNs
 #     sqlmodel.createTables(engine)
 #     return 'createables'
 
+@app.route('/updatetable',methods=['GET'])
+def updatetable():
+    sqlmodel.test()
+    return jsonify({'aa':'ss'})
 
 @app.route('/points',methods=['POST'])
 def points():
@@ -75,13 +80,23 @@ def record(user_id):
 
 ###########################    order For Master    #############################################
 
+@app.route('/historylogin',methods=['GET'])
+def historylogin():
+    print sqlmodel.historyForLoginTime()
+    return jsonify({'status': 1})
+
+@app.route('/allpoints',methods=['GET'])
+def allpoints():
+    print sqlmodel.allPoints()
+    return jsonify({'status':1})
+
+
 @app.route('/order',methods=['GET'])
 def order():
-    deal_time = '2017.3.25'
-    deal_Prce = 2.0
+    deal_Prce = int(random.uniform(10, 20))
     goods_name = 'fruit'
-    flag = sqlmodel.addOrder(deal_time,deal_Prce, goods_name)
-    return jsonify({'status':flag})
+    flag = sqlmodel.addOrder(deal_Prce, goods_name)
+    return jsonify({'status':deal_Prce})
 
 
 ###########################    register    #############################################

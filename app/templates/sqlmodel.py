@@ -1,18 +1,21 @@
 # -*- coding: utf-8 -*-
 from MySQLdb.constants.REFRESH import LOG
-from sqlalchemy import Boolean, Float,ForeignKey
+from sqlalchemy import Boolean, Float, ForeignKey, func, extract
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import DateTime
 from sqlalchemy import MetaData
 from sqlalchemy import Table
 from config import Base, db_session
 
-import time
+import time,datetime,random
 
 
 
 
 
+def test():
+    u = Order.query.filter(Order.deal_Prce).sum()
+    print u
 
 def addItem(name,email):
     u = User(name=name, email=email)
@@ -23,6 +26,34 @@ def addItem(name,email):
         return 'wrong（key repeat）'
     return 'Add %s user successfully' % name
 
+###########################    查询某一天 某个月 某年 的数据    #############################################
+#该字段类型必需为  datetime
+
+
+
+# 之后只需要这么写，就可以获取某月份的所有数据了
+#
+# # 获取12月份的所有数据
+# historys = History.query.filter(extract('month', History.date) == 12).all()
+
+#month day year
+def historyForLoginTime():
+    historys = User.query.filter(extract('month', User.last_time) == 3).all()
+    return historys
+###########################    查询order表 积分总数    #############################################
+#
+
+def allPoints():
+    #当前时间
+    # print db_session.query(func.now()).scalar()
+
+
+    #msyql sum方法
+    return db_session.query(func.sum(Order.deal_Prce)).scalar()
+
+###########################    record    #############################################
+#查询用户订单纪录
+
 def record(user_id):
     try:
         order = Order.query.filter(Order.user_id == user_id).all()
@@ -31,16 +62,18 @@ def record(user_id):
         return 'there isnot %s'
     return order
 
-def addOrder(deal_time,deal_Prce,goods_name):
+def addOrder(deal_Prce,goods_name):
     user_id = 1
-    order = Order(user_id=user_id,deal_time=deal_time,deal_Prce=deal_Prce,goods_name=goods_name)
+    order = Order(user_id=user_id,deal_time=datetime.datetime.now(),deal_Prce=deal_Prce,goods_name=goods_name)
     try:
         db_session.add(order)
         db_session.commit()
     except Exception,e:
         return 0
     return 1
-#更新积分接口
+
+###########################    更新积分接口    #############################################
+#
 
 #如果paras ＝ 0 表示查询当前积分
 #如果paras > 0 表示更改当前积分
@@ -66,7 +99,9 @@ def points(name,paras):
 #
 def register(name,pwd):
     # user_id = ticks%10000*100000*1000+1*1000
+    today = datetime.datetime.now()
     u = User(name = name, pwd= pwd,user_id=int(time.time()))
+    u.last_time = today
     try:
         db_session.add(u)
         db_session.commit()
@@ -85,11 +120,35 @@ def login(name,pwd):
     if  u:
         if u.pwd == pwd:
             # points = User.query.filter(User.i==name).first()
+            u.last_time = datetime.datetime.now()
+            db_session.add(u)
+            db_session.commit()
             return u
     else:
         return False
 
 ##################################################################
+
+
+NEW_COLUMN_NAME = 'last_logintime'
+
+
+def upgrade(migrate_engine):
+    meta = MetaData()
+    meta.bind = migrate_engine
+
+    # 获取一个表对象
+    exsi_hypervisors = Table('exsi_hypervisors', meta, autoload=True)
+
+    # 如果表对象中已经存在了 metadata_reserve 属性(字段), 则 alter 该属性(字段)
+    if hasattr(exsi_hypervisors.c, 'metadata_reserve'):
+        # 获取 metadata_reserve 属性对象
+        exsi_hypervisors_metadate_reserve = getattr(exsi_hypervisors.c,
+                                                    'metadata_reserve')
+        # 通过属性对象来调用 alter() 方法, 并且传入需要更新的字段名和类型作为实参
+        exsi_hypervisors_metadate_reserve.alter(name='initiator_protocol',
+                                                type=String(255))
+
 
 #没测试成功
 def deleteTables(migrate_engine):
@@ -332,6 +391,7 @@ class User(Base):
     user_id = Column(Integer, unique=True)
     email = Column(String(120), unique=False)
     points = Column(Float, unique=False)
+    last_time = Column(DateTime,unique=False)
 
 
     def __init__(self, name=None,pwd=None,user_id=None):
@@ -340,6 +400,8 @@ class User(Base):
         self.user_id = user_id
         self.email = None
         self.points = 0.0
+        self.last_time = None
+
 
 
     # def __init__(self, name=None,pwd=None,email=None):
@@ -362,9 +424,9 @@ class Order(Base):
 
     id          = Column(Integer, primary_key=True)
     order_id    = Column(Integer, unique=True)
-    deal_time   = Column(String(120), unique=True)
-    deal_Prce   = Column(Float,unique=True)
-    goods_name  = Column(String(30),unique=True)
+    deal_time   = Column(DateTime, unique=True)
+    deal_Prce   = Column(Float,unique=False)
+    goods_name  = Column(String(30),unique=False)
 
     user_id = Column(Integer, ForeignKey('users.id'))
 
@@ -374,7 +436,7 @@ class Order(Base):
         self.deal_Prce = deal_Prce
         self.goods_name = goods_name
 
-        self.order_id = 100000
+        self.order_id = 10000+int(random.uniform(0, 1000000))
 
     # def __init__(self, name=None,pwd=None,email=None):
     #     self.name = name
