@@ -222,28 +222,11 @@ def interface():
     ]
     return jsonify({'tasks': tasks})
 
-
-# @app.route('/login',methods=['GET','POST'])
-# def login():
-#     tasks = [
-#         {
-#             'id': 12,
-#             'title': u'Buy groceries',
-#             'description': u'Milk, Cheese, Pizza, Fruit, Tylenol',
-#             'done': False
-#         },
-#         {
-#             'id': 2,
-#             'title': u'Learn Python',
-#             'description': u'Need to find a good Python tutorial on the web',
-#             'done': False
-#         }
-#     ]
-#     if request.method == "POST":
-#         return  jsonify({'username': request.form['username']})
-#
-#     if request.method == 'GET':
-#         return jsonify({'tasks': tasks})
+# 在您的应用当中以一个显式调用 SQLAlchemy , 您只需要将如下代码放置在您应用的模块中。
+# Flask 将会在请求结束时自动移除数据库会话:
+@app.teardown_request
+def shutdown_session(exception=None):
+    db_session.remove()
 
 
 
