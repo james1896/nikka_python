@@ -6,10 +6,14 @@ from flask import jsonify
 from ..templates import sqlmodel
 from app.config import db_session
 
+from app.venv.rsa import rsaCipher
+
 
 #这里要注意是admin.route (即对应蓝图的名称)
 @admin.route('/')
 def index():
+    rsaCipher.masterKeyPair()
+    rsaCipher.ghostKeyPair()
     return "hello admin"
 
 

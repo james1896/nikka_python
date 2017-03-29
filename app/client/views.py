@@ -12,6 +12,7 @@ from app.venv.rsa.rsaCipher import random_generator
 from . import client
 @client.route('/')
 def index():
+
     return "hello client"
 
 

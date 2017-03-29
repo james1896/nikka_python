@@ -37,9 +37,9 @@ def masterKeyPair():
     with open('master-public.pem', 'w') as f:
         f.write(master_public_pem)
 
-    with open('ghost-public.pem') as f:
-        key = f.read()
-    print 'random~~~~~:',random_generator,'rsa~~~~~~```:',rsa,key
+    # with open('ghost-public.pem') as f:
+    #     key = f.read()
+    # print 'random~~~~~:',random_generator,'rsa~~~~~~```:',rsa,key
 
 
 # 生成签名密钥
@@ -59,6 +59,7 @@ def ghostKeyPair():
     ghost_public_pem = rsa.publickey().exportKey()
     with open('ghost-public.pem', 'w') as f:
         f.write(ghost_public_pem)
+    print ghost_public_pem
 
 # Ghost使用Ghost的公钥对内容进行rsa 加密
 def encryptionWithString(text):
