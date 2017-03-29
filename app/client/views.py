@@ -1,41 +1,26 @@
 # -*- coding: utf-8 -*-
 
-import hashlib
-from app import app
-from templates import sqlmodel
-from config import db_session
-from templates import RSACipher
-from templates.RSACipher import random_generator
-
-from flask import request
+import json
 from flask import jsonify
-from config import engine
+from flask import request
+from app import app
+from app.config import db_session
+from app.templates import sqlmodel
+from app.venv.rsa import rsaCipher
+from app.venv.rsa.rsaCipher import random_generator
 
-import json,random
+from . import client
+@client.route('/')
+def index():
+    return "hello client"
 
-from templates import APNs
 
-# @app.route('/pushnotification')
-# def pushNotification():
-#     APNs.sendPushNotification();
-#     return 'sendNotification success'
-
-# @app.route('/deleteTables',methods=['GET','POST'])
-# def deletetables():
-#     sqlmodel.deleteTables(engine)
-#     return 'deleteTables'
-#
-# @app.route('/createtables',methods=['GET','POST'])
-# def createtables():
-#     sqlmodel.createTables(engine)
-#     return 'createables'
-
-@app.route('/updatetable',methods=['GET'])
+@client.route('/updatetable',methods=['GET'])
 def updatetable():
-    sqlmodel.test()
+    # sqlmodel.test()
     return jsonify({'aa':'ss'})
 
-@app.route('/points',methods=['POST'])
+@client.route('/points',methods=['POST'])
 def points():
     # if(request.method == 'POST'):
     #     name = request.form['username']
@@ -64,13 +49,13 @@ def points():
 
 
 
-@app.route('/users',methods=['GET','POST'])
+@client.route('/users',methods=['GET','POST'])
 def users():
 
     return jsonify({'users':sqlmodel.userCount()})
     # return jsonify({'time':time.time()})
 
-@app.route('/record/<user_id>',methods=['GET','POST'])
+@client.route('/record/<user_id>',methods=['GET','POST'])
 def record(user_id):
     # dict = handlePOSTData()
     # if dict.has_key('user_id'):
@@ -78,31 +63,13 @@ def record(user_id):
     sqlmodel.record(user_id)
     return jsonify({'status':1})
 
-###########################    order For Master    #############################################
 
-@app.route('/historylogin',methods=['GET'])
-def historylogin():
-    print sqlmodel.historyForLoginTime()
-    return jsonify({'status': 1})
-
-@app.route('/allpoints',methods=['GET'])
-def allpoints():
-    print sqlmodel.allPoints()
-    return jsonify({'status':1})
-
-
-@app.route('/order',methods=['GET'])
-def order():
-    deal_Prce = int(random.uniform(10, 20))
-    goods_name = 'fruit'
-    flag = sqlmodel.addOrder(deal_Prce, goods_name)
-    return jsonify({'status':deal_Prce})
 
 
 ###########################    register    #############################################
 
 
-@app.route('/register',methods=['POST'])
+@client.route('/register',methods=['POST'])
 def register():
     dict = handlePOSTData()
     if dict.has_key('username') and dict.has_key('password'):
@@ -113,7 +80,7 @@ def register():
 ###########################    login    #############################################
 
 
-@app.route('/login',methods=['POST'])
+@client.route('/login',methods=['POST'])
 def login():
     # if request.method == 'POST':
     #     name = RSACipher.decryptionWithString(request.form['username'],random_generator)
@@ -133,7 +100,7 @@ def login():
 ############################    test    #############################################
 
 
-@app.route('/test',methods=['GET','POST'])
+@client.route('/test',methods=['GET','POST'])
 def test():
     # m2 = hashlib.md5()
     # m2.update('hello')
@@ -155,13 +122,13 @@ def handlePOSTData():
         # 得到前端 post 过来的 json字符串
         # data = json.dumps(request.form.get('value'))
         # data为字典类型
-        value = RSACipher.decryptionWithString(request.form.get('value'), random_generator)
+        value = rsaCipher.decryptionWithString(request.form.get('value'), random_generator)
         dict = json.loads(value)
         return dict
 
-@app.route('/updatersakeypairs')
+@client.route('/updatersakeypairs')
 def updateRsaKeypairs():
-    RSACipher.masterKeyPair()
+    rsaCipher.masterKeyPair()
     return jsonify({'status':"ok"})
 
 @app.route('/add/<name>/<pwd>')
@@ -222,9 +189,10 @@ def interface():
     ]
     return jsonify({'tasks': tasks})
 
+
 # 在您的应用当中以一个显式调用 SQLAlchemy , 您只需要将如下代码放置在您应用的模块中。
 # Flask 将会在请求结束时自动移除数据库会话:
-@app.teardown_request
+@client.teardown_request
 def shutdown_session(exception=None):
     db_session.remove()
 

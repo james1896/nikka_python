@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-from MySQLdb.constants.REFRESH import LOG
+import datetime
+import random
+import time
+
 from sqlalchemy import Boolean, Float, ForeignKey, func, extract
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import DateTime
 from sqlalchemy import MetaData
 from sqlalchemy import Table
-from config import Base, db_session
 
-import time,datetime,random
-
-
-
+from app.config import Base, db_session
 
 
 def test():
