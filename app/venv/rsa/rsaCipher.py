@@ -30,11 +30,11 @@ def masterKeyPair():
     rsa = RSA.generate(1024, random_generator)
     master_private_pem = rsa.exportKey()
 
-    with open('master-private.pem', 'w') as f:
+    with open('app/venv/rsa/master-private.pem', 'w') as f:
         f.write(master_private_pem)
 
     master_public_pem = rsa.publickey().exportKey()
-    with open('master-public.pem', 'w') as f:
+    with open('app/venv/rsa/master-public.pem', 'w') as f:
         f.write(master_public_pem)
 
     # with open('ghost-public.pem') as f:
@@ -53,18 +53,18 @@ def ghostKeyPair():
 
     rsa = RSA.generate(1024, random_generator)
     ghost_private_pem = rsa.exportKey()
-    with open('ghost-private.pem', 'w') as f:
+    with open('app/venv/rsa/ghost-private.pem', 'w') as f:
         f.write(ghost_private_pem)
 
     ghost_public_pem = rsa.publickey().exportKey()
-    with open('ghost-public.pem', 'w') as f:
+    with open('app/venv/rsa/ghost-public.pem', 'w') as f:
         f.write(ghost_public_pem)
     print ghost_public_pem
 
 # Ghost使用Ghost的公钥对内容进行rsa 加密
 def encryptionWithString(text):
 
-    with open('ghost-public.pem') as f:
+    with open('app/venv/rsa/ghost-public.pem') as f:
         key = f.read()
         rsakey = RSA.importKey(key)
         cipher = Cipher_pkcs1_v1_5.new(rsakey)
@@ -75,7 +75,7 @@ def encryptionWithString(text):
 
 # Ghost使用自己的私钥对内容进行rsa 解密
 def decryptionWithString(cipher_text,random_generator):
-    with open('ghost-private.pem') as f:
+    with open('app/venv/rsa/ghost-private.pem') as f:
         key = f.read()
         rsakey = RSA.importKey(key)
         cipher = Cipher_pkcs1_v1_5.new(rsakey)
@@ -85,7 +85,7 @@ def decryptionWithString(cipher_text,random_generator):
 
 # Master 使用自己的公钥对内容进行解签
 def signatureWithString(text):
-    with open('master-private.pem') as f:
+    with open('app/venv/rsa/master-private.pem') as f:
         key = f.read()
         rsakey = RSA.importKey(key)
         signer = Signature_pkcs1_v1_5.new(rsakey)
@@ -99,7 +99,7 @@ def signatureWithString(text):
 
  # Ghost使用自己的公钥对内容进行rsa 解密
 def verificationSignature(message,signature):
-    with open('master-public.pem') as f:
+    with open('app/venv/rsa/master-public.pem') as f:
         key = f.read()
         rsakey = RSA.importKey(key)
         signer = Signature_pkcs1_v1_5.new(rsakey)
