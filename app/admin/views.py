@@ -3,18 +3,37 @@
 import random
 from . import admin
 from flask import jsonify
+from app.config import init_db
 from ..templates import sqlmodel
 from app.config import db_session
 
 from app.venv.rsa import rsaCipher
 
+from ..venv.mysql import query
+
+
 
 #这里要注意是admin.route (即对应蓝图的名称)
 @admin.route('/')
 def index():
+    return "hello admin"
+
+#添加表model 后调用增加表
+@admin.route('/addtable')
+def addTable():
+    init_db()
+
+#更新公私钥
+@admin.route('/updatersakey')
+def updateRSAKey():
     rsaCipher.masterKeyPair()
     rsaCipher.ghostKeyPair()
-    return "hello admin"
+
+@admin.route('/test')
+def test():
+
+    print  query.test()
+    return jsonify({'a':'b'})
 
 
 ###########################    order For Master    #############################################

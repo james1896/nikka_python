@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 import datetime
-import random
 import time
 
-from sqlalchemy import Boolean, Float, ForeignKey, func, extract
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Boolean, func, extract
+from sqlalchemy import Column, String
 from sqlalchemy import DateTime
 from sqlalchemy import MetaData
 from sqlalchemy import Table
 
-from app.config import Base, db_session
+from app.config import  db_session
 
 from ..venv.mysql.model import User,Order
 def test():

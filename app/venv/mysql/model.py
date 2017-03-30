@@ -10,9 +10,7 @@ from sqlalchemy import Column, Integer, String
 
 
 
-#########################   mysql表结构    #####################################################
-
-
+#########################   User表结构    #####################################################
 
 
 class User(Base):
@@ -50,7 +48,7 @@ class User(Base):
     def __repr__(self):
         return '%s (%r, %r)' % (self.__class__.__name__, self.name, self.email)
 
-
+#########################   Order 表结构    #####################################################
 
 class Order(Base):
     __tablename__ = 'orders'
@@ -83,3 +81,17 @@ class Order(Base):
 
     def __repr__(self):
         return '%s (%r, %r)' % (self.__class__.__name__, self.user_id, self.goods_name)
+
+
+#用户行为统计
+class UserBehaviourStatistics(Base):
+    __tablename__ = 'behstatistics'
+
+    id          = Column(Integer, primary_key=True)
+    login_time  = Column(DateTime, unique=False)
+    user_id     = Column(Integer, ForeignKey('users.id'))
+
+    def __init__(self,login_time=None,user_id=None):
+        self.login_time = login_time
+        self.user_id = user_id
+

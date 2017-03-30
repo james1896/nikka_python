@@ -21,11 +21,12 @@ app.register_blueprint(client_blurprint,url_prefix='/client')
 @app.route('/')
 def index():
     #初始化数据库（如果没有旧创建 ，如果有就忽略）
-    init_db()
+
     return 'Nikka/ app'
 
 
-if __name__ == '__main__':
-    init_db()
+# if __name__ == '__main__':
+#     print 'main'
+#     init_db()
 
 from app.client import views
