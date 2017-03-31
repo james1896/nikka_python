@@ -36,17 +36,24 @@ def test():
     return jsonify({'a':'b'})
 
 
-###########################    order For Master    #############################################
-
+#查询某一天 某个月 某年 的登录信息
 @admin.route('/historylogin',methods=['GET'])
 def historylogin():
-    print sqlmodel.historyForLoginTime()
+    print query.historyForLoginTime()
     return jsonify({'status': 1})
 
+#查询所有用户的总积分
+#了解当前用户的积分情况，做数据分析
 @admin.route('/allpoints',methods=['GET'])
 def allpoints():
-    print sqlmodel.allPoints()
+    print query.allPoints()
     return jsonify({'status':1})
+
+
+#查询user表中有多少用户
+@admin.route('/userCount')
+def userCount():
+    return jsonify({'data':query.userCounts()})
 
 
 @admin.route('/order',methods=['GET'])

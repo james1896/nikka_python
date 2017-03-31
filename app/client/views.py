@@ -10,16 +10,21 @@ from app.venv.rsa import rsaCipher
 from app.venv.rsa.rsaCipher import random_generator
 
 from . import client
+from ..venv.mysql import query
 @client.route('/')
 def index():
 
     return "hello client"
 
+####################    积分转赠    ##############################################
+#积分转赠
 
-@client.route('/updatetable',methods=['GET'])
-def updatetable():
-    # sqlmodel.test()
-    return jsonify({'aa':'ss'})
+@client.route('/pointgift/<sponsor>/<received>/<point>',methods=['GET','POST'])
+def pointgift(sponsor,received,point):
+   print query.pointGift(sponsor,received,point)
+   return jsonify({'we':'heihei'})
+
+####################    积分转赠    ##############################################
 
 @client.route('/points',methods=['POST'])
 def points():
@@ -100,37 +105,17 @@ def login():
 
 ############################    test    #############################################
 
-
-@client.route('/test',methods=['GET','POST'])
-def test():
-    # m2 = hashlib.md5()
-    # m2.update('hello')
-    # print m2.hexdigest()
-    # return m2.hexdigest()
-    # if request.method == 'POST':
-        # value = RSACipher.decryptionWithString(request.form.get('value'),random_generator)
-        # #得到前端 post 过来的 json字符串
-        # # data = json.dumps(request.form.get('value'))
-        # #data为字典类型
-        # dict = json.loads(value)
-        dict = handlePOSTData()
-        if dict.has_key('a'):
-            print dict['a']
-        return jsonify(dict)
-
 def handlePOSTData():
     if request.method == 'POST':
         # 得到前端 post 过来的 json字符串
         # data = json.dumps(request.form.get('value'))
         # data为字典类型
         value = rsaCipher.decryptionWithString(request.form.get('value'), random_generator)
+
+        #json -> dict
         dict = json.loads(value)
         return dict
 
-@client.route('/updatersakeypairs')
-def updateRsaKeypairs():
-    rsaCipher.masterKeyPair()
-    return jsonify({'status':"ok"})
 
 @app.route('/add/<name>/<pwd>')
 def add(name, pwd):

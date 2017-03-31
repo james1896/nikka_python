@@ -24,30 +24,6 @@ def addItem(name,email):
         return 'wrong（key repeat）'
     return 'Add %s user successfully' % name
 
-###########################    查询某一天 某个月 某年 的数据    #############################################
-#该字段类型必需为  datetime
-
-
-
-# 之后只需要这么写，就可以获取某月份的所有数据了
-#
-# # 获取12月份的所有数据
-# historys = History.query.filter(extract('month', History.date) == 12).all()
-
-#month day year
-def historyForLoginTime():
-    historys = User.query.filter(extract('month', User.last_time) == 3).all()
-    return historys
-###########################    查询order表 积分总数    #############################################
-#
-
-def allPoints():
-    #当前时间
-    # print db_session.query(func.now()).scalar()
-
-
-    #msyql sum方法
-    return db_session.query(func.sum(Order.deal_Prce)).scalar()
 
 ###########################    record    #############################################
 #查询用户订单纪录
@@ -368,10 +344,5 @@ def downgrade(migrate_engine):
     # 1
     # 1
     # 就能够对现有的数据库进行更新.
-
-
-#查询user表中有多少条数据
-def userCount():
-    return db_session.query(User).filter_by().count()
 
 
