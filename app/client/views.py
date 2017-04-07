@@ -11,41 +11,31 @@ from app.venv.rsa.rsaCipher import random_generator
 
 from . import client
 from ..venv.mysql import query
+
+
 @client.route('/')
 def index():
-
     return "hello client"
 
-####################    积分转赠    ##############################################
-#积分转赠
-
-@client.route('/pointgift/<sponsor>/<received>/<point>',methods=['GET','POST'])
-def pointgift(sponsor,received,point):
-   print query.pointGift(sponsor,received,point)
-   return jsonify({'we':'heihei'})
 
 ####################    积分转赠    ##############################################
+# 积分转赠
 
-@client.route('/points',methods=['POST'])
+@client.route('/pointgift/<sponsor>/<received>/<point>', methods=['GET', 'POST'])
+def pointgift(sponsor, received, point):
+    print query.pointGift(sponsor, received, point)
+    return jsonify({'we': 'heihei'})
+
+
+####################    积分转赠    ##############################################
+
+@client.route('/points', methods=['POST'])
 def points():
-    # if(request.method == 'POST'):
-    #     name = request.form['username']
-    #     print name
-    #     u = sqlmodel.points(name)
-    #     print u.pwd
-    #     if u:
-    #         return jsonify({'points':u.points})
-    #     else:
-    #         return jsonify({'error':1})
-    # return jsonify({'status': 2})
-    # name = request.form['username']
-    # para = request.form['paras']
-    # print 'name:', name, 'para', para
     if request.method == 'POST':
         name = request.form['username']
         para = request.form['paras']
-        u = sqlmodel.points(name,para)
-        print '积分:',u.points
+        u = sqlmodel.points(name, para)
+        print '积分:', u.points
         if u:
             return jsonify({'points': u.points})
         else:
@@ -53,69 +43,63 @@ def points():
     return jsonify({'points': -1})
 
 
-
-
-@client.route('/users',methods=['GET','POST'])
-def users():
-
-    return jsonify({'users':sqlmodel.userCount()})
-    # return jsonify({'time':time.time()})
-
-@client.route('/record/<user_id>',methods=['GET','POST'])
+@client.route('/record/<user_id>', methods=['GET', 'POST'])
 def record(user_id):
-    # dict = handlePOSTData()
-    # if dict.has_key('user_id'):
-    #     sqlmodel.record(dict['user_id'])
     sqlmodel.record(user_id)
-    return jsonify({'status':1})
-
-
+    return jsonify({'status': 1})
 
 
 ###########################    register    #############################################
 
 
-@client.route('/register',methods=['POST'])
+@client.route('/register', methods=['POST'])
 def register():
-    dict = handlePOSTData()
+    dict = handlePostData()
     if dict.has_key('username') and dict.has_key('password'):
-        user = sqlmodel.register(dict['username'],dict['password'])
+        user = query.register(dict['username'], dict['password'])
         if user:
-            return jsonify({'status':1,'user_id':user.user_id})
-    return jsonify({'status':2})
+            return jsonify({'status': 1, 'user_id': user.user_id})
+    return jsonify({'status': 2})
+
+
 ###########################    login    #############################################
 
 
-@client.route('/login',methods=['POST'])
+@client.route('/login', methods=['POST'])
 def login():
-    # if request.method == 'POST':
-    #     name = RSACipher.decryptionWithString(request.form['username'],random_generator)
-    #     pwd  = RSACipher.decryptionWithString(request.form['password'],random_generator)
-    #
-    #     user = sqlmodel.login(name,pwd)
-    #     if user:
-    #         return jsonify({'status':1,'data':{'points':user.points}})
-    dict = handlePOSTData()
+    dict = handlePostData()
     if dict.has_key('username') and dict.has_key('password'):
-        user = sqlmodel.login(dict['username'],dict['password'])
+        user = query.login(dict['username'], dict['password'])
         if user:
-            return jsonify({'status':1,'user_id':user.user_id,'data':{'points':user.points}})
-    return jsonify({'status':2})
+            return jsonify({'status': 1, 'user_id': user.user_id, 'data': {'points': user.points}})
+    return jsonify({'status': -1})
 
 
 ############################    test    #############################################
+#带加密的
+@client.route('/test',methods=['POST'])
+def test():
+    dict = handlePostData()
+    return jsonify({'aa':dict['aa']})
 
-def handlePOSTData():
+#不带加密的
+@client.route('/test1',methods=['POST'])
+def test1():
+    if request.method == 'POST':
+        paras = request.form.get('test')
+    return jsonify({'test':paras})
+############################    test    #############################################
+
+def handlePostData():
     if request.method == 'POST':
         # 得到前端 post 过来的 json字符串
         # data = json.dumps(request.form.get('value'))
         # data为字典类型
         value = rsaCipher.decryptionWithString(request.form.get('value'), random_generator)
 
-        #json -> dict
+        # jsonn --> dictt
         dict = json.loads(value)
         return dict
-
 
 @app.route('/add/<name>/<pwd>')
 def add(name, pwd):
@@ -125,13 +109,14 @@ def add(name, pwd):
 
     # signature = signatureWithString('text')
     # print 'verification:',verificationSignature('text1',signature)
-    u = sqlmodel.User(name=name,pwd=pwd)
+    u = sqlmodel.User(name=name, pwd=pwd)
     try:
         db_session.add(u)
         db_session.commit()
     except Exception, e:
         return 'wrong（key repeat）'
-    return     'Add %s user successfully' % name
+    return 'Add %s user successfully' % name
+
 
 @app.route('/delete/<name>')
 def delete(name):
@@ -145,7 +130,7 @@ def delete(name):
 
 
 @app.route('/update/<name>/<email>')
-def update(name,email):
+def update(name, email):
     try:
         u = sqlmodel.User.query.filter(sqlmodel.User.name == name).first()
         u.email = email
@@ -156,8 +141,7 @@ def update(name,email):
     return 'update finish'
 
 
-
-@app.route('/interface',methods=['GET','POST'])
+@app.route('/interface', methods=['GET', 'POST'])
 def interface():
     tasks = [
         {
@@ -181,7 +165,3 @@ def interface():
 @client.teardown_request
 def shutdown_session(exception=None):
     db_session.remove()
-
-
-
-

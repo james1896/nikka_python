@@ -11,6 +11,10 @@ from sqlalchemy import Table
 from app.config import  db_session
 
 from ..venv.mysql.model import User,Order
+
+
+
+
 def test():
     u = Order.query.filter(Order.deal_Prce).sum()
     print u
@@ -68,38 +72,6 @@ def points(name,paras):
         except Exception, e:
             return 'there isnot %s' % name
         return u
-
-#注册接口
-#
-def register(name,pwd):
-    # user_id = ticks%10000*100000*1000+1*1000
-    today = datetime.datetime.now()
-    u = User(name = name, pwd= pwd,user_id=int(time.time()))
-    u.last_time = today
-    try:
-        db_session.add(u)
-        db_session.commit()
-        return u
-    except Exception,e:
-        return None
-
-#登录接口
-#
-def login(name,pwd):
-    try:
-        u = User.query.filter(User.name==name).first()
-    except Exception, e:
-        return 'there isnot %s' % name
-
-    if  u:
-        if u.pwd == pwd:
-            # points = User.query.filter(User.i==name).first()
-            u.last_time = datetime.datetime.now()
-            db_session.add(u)
-            db_session.commit()
-            return u
-    else:
-        return False
 
 ##################################################################
 
