@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
-from flask import jsonify
+from flask import jsonify,Response
 from flask import request
 from app import app
 from app.config import db_session
@@ -17,6 +17,22 @@ from ..venv.mysql import query
 def index():
     return "hello client"
 
+############################    返回服务器 image     #############################################
+
+@client.route('/image/<imageid>')
+def getImage(imageid):
+    try:
+        image = file("images/{}.jpg".format(imageid))
+        resp = Response(image, mimetype="image/jpeg")
+        return resp
+    except Exception,e:
+        return jsonify({'error':'error the image path'})
+
+    #第二种方式也可以实现 但是不知道这两种的区别
+    # with open('image/' + str(imageid) + '.jpg') as f:
+    #     return Response(f.read(), mimetype='image/jpeg')
+
+############################    返回服务器 image    #############################################
 
 ####################    积分转赠    ##############################################
 # 积分转赠
