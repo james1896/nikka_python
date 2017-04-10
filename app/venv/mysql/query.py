@@ -3,7 +3,7 @@ from .model import User,Order
 from .model import UserBehaviourStatistics
 from app.config import  db_session
 
-import datetime
+import datetime,time
 from sqlalchemy import func, extract
 
 ###########################################   master    ####################################################
@@ -20,11 +20,28 @@ from sqlalchemy import func, extract
 # historys = History.query.filter(extract('month', History.date) == 12).all()
 
 
+
 #month day year
 def historyForLoginTime():
     historys = User.query.filter(extract('month', User.last_time) == 3).all()
     return historys
 
+
+# time.strftime('%Y-%m-%d',time.localtime(time.time()))
+def historyForCurrentMonth():
+    month = time.strftime('%m', time.localtime(time.time()))
+
+    return histroyLoginInfo('month',month);
+
+def historyForCurrentDay():
+    day = time.strftime('%d', time.localtime(time.time()))
+    return histroyLoginInfo('day',day);
+
+#period   mounth,day,year
+#number    12   31  2017
+def histroyLoginInfo(period,number):
+    historys = User.query.filter(extract(period, User.last_time) == number).all()
+    return historys
 
 #查询order表 积分总数
 def allPoints():

@@ -39,7 +39,8 @@ def test():
 #查询某一天 某个月 某年 的登录信息
 @admin.route('/historylogin',methods=['GET'])
 def historylogin():
-    print query.historyForLoginTime()
+    # print query.historyForLoginTime()
+    print query.historyForCurrentDay()
     return jsonify({'status': 1})
 
 #查询所有用户的总积分
