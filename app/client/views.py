@@ -20,9 +20,11 @@ def index():
 ############################    服务器 image     #############################################
 
 ##上传图片到服务器
-
 #上传文件到服务器，可能存在安全隐患
-#需要请教大神
+
+#####需要请教大神#########
+
+#上传图片到根目录下载images文件夹
 UPLOAD_FOLDER=r'images'
 
 @client.route('/img',methods=['POST'])
@@ -31,11 +33,12 @@ def getimg():
     file.save(os.path.join(UPLOAD_FOLDER, file.filename))
     return jsonify({'a':'b'})
 
-##下载服务器图片
 
+##下载服务器图片
 @client.route('/image/<imageid>')
 def getImage(imageid):
     try:
+        #根目录imamges文件夹下 {}是匹配的意思
         image = file("images/{}.jpg".format(imageid))
         resp = Response(image, mimetype="image/jpeg")
         return resp
