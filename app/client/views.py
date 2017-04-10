@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import json
+import json,os
 from flask import jsonify,Response
 from flask import request
 from app import app
@@ -17,7 +17,21 @@ from ..venv.mysql import query
 def index():
     return "hello client"
 
-############################    返回服务器 image     #############################################
+############################    服务器 image     #############################################
+
+##上传图片到服务器
+
+#上传文件到服务器，可能存在安全隐患
+#需要请教大神
+UPLOAD_FOLDER=r'images'
+
+@client.route('/img',methods=['POST'])
+def getimg():
+    file = request.files['file']
+    file.save(os.path.join(UPLOAD_FOLDER, file.filename))
+    return jsonify({'a':'b'})
+
+##下载服务器图片
 
 @client.route('/image/<imageid>')
 def getImage(imageid):
@@ -32,7 +46,9 @@ def getImage(imageid):
     # with open('image/' + str(imageid) + '.jpg') as f:
     #     return Response(f.read(), mimetype='image/jpeg')
 
-############################    返回服务器 image    #############################################
+############################    服务器 image    #############################################
+
+
 
 ####################    积分转赠    ##############################################
 # 积分转赠
