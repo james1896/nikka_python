@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import json,os
-from flask import jsonify,Response
+from flask import jsonify, Response, send_from_directory
 from flask import request
+from werkzeug.utils import secure_filename
+
 from app import app
 from app.config import db_session
 from app.templates import sqlmodel
@@ -20,19 +22,47 @@ def index():
 ############################    服务器 image     #############################################
 
 ##上传图片到服务器
-#上传文件到服务器，可能存在安全隐患
 
 #####需要请教大神#########
+#上传文件到服务器，可能存在安全隐患
 
 #上传图片到根目录下载images文件夹
 UPLOAD_FOLDER=r'images'
 
+# 添加指定允许文件类型的范围
+ALLOWED_EXTENSIONS=set(['txt','pdf','png','jpg','jpeg','gif'])
+
+#判断上传文件类型
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.',1)[1] in ALLOWED_EXTENSIONS
+
 @client.route('/img',methods=['POST'])
 def getimg():
-    file = request.files['file']
-    file.save(os.path.join(UPLOAD_FOLDER, file.filename))
-    return jsonify({'a':'b'})
+    # file = request.files['file']
+    # 表示，从request请求的files字典中，
+    # 取出file对应的文件。这个文件是一个FileStorage对象
 
+    # request的files属性，files是一个MultiDict的形式，
+    # 而里面的每个文件，都是一个FileStorage对象
+    file = request.files['file']
+    if file and allowed_file(file.filename):
+        # 再来看下这个函数的功能，其实他为了保证文件名不会影响到系统，
+        # 他就把文件名里面的斜杠和空格，替换成了下划线
+        # 这样，就保证了文件只会在当前目录使用，而不会由于路径问题被利用去做其他事情。
+        # 所以，在储存文件之前，通过这个函数把文件名先修改一下
+        filename = secure_filename(file.filename)
+
+        # 这个文件对象拥有一个函数功能来保存文件，叫做save()
+        # 这个文件对象还拥有一个属性来提取文件名，叫做filename
+        # file.save(os.path.join(UPLOAD_FOLDER, file.filename))
+        file.save(os.path.join(UPLOAD_FOLDER, 'fileName.png'))
+        return jsonify({'a':'b'})
+
+
+#通过图片名 得到某个图片
+@client.route('/uploadedfile/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 ##下载服务器图片
 @client.route('/image/<imageid>')
