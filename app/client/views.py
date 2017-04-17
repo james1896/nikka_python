@@ -148,11 +148,14 @@ def test():
     return jsonify({'aa':dict['aa']})
 
 #不带加密的
-@client.route('/test1',methods=['POST'])
+@client.route('/test1',methods=["GET",'POST'])
 def test1():
     if request.method == 'POST':
         paras = request.form.get('test')
-    return jsonify({'test':paras})
+        return jsonify({'test':paras})
+    else:
+        return jsonify({'test1':'test1'})
+
 ############################    test    #############################################
 
 def handlePostData():
