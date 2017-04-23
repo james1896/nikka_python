@@ -13,6 +13,7 @@ from Crypto.Signature import PKCS1_v1_5 as Signature_pkcs1_v1_5
 # # rsa算法生成实例
 # rsa =RSA.generate(1024, random_generator)
 random_generator = Random.new().read
+
 # rsa算法生成实例
 rsa =RSA.generate(1024, random_generator)
 

@@ -8,6 +8,8 @@ app = Flask(__name__)
 
 from .admin import admin as admin_blurprint
 from .client import client as  client_blurprint
+from .client import client_v1_0 as  client_v1_0_blurprint
+from .client import client_v1_1 as  client_v1_1_blurprint
 
 
 #   注册蓝图
@@ -15,6 +17,8 @@ from .client import client as  client_blurprint
 #   像这里把admin作为链接的前缀，要访问 admin视图文件的根目录的话就是  www.abc.com/admin
 app.register_blueprint(admin_blurprint,url_prefix='/admin')
 app.register_blueprint(client_blurprint,url_prefix='/client')
+app.register_blueprint(client_v1_0_blurprint,url_prefix='/client_v1_0')
+app.register_blueprint(client_v1_1_blurprint,url_prefix='/client_v1_1')
 
 
 
