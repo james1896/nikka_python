@@ -12,9 +12,15 @@ def login():
     json = view.login()
     return json
 
+
+
+
+
 # 初级错误
-# views_v1_0 是模块
-# ViewsV1_0  是类
-class views_v1_1 (views_v1_0.ViewsV1_0):
+#第一个  views_v1_0 是模块
+#第二个  Views_v1_0  是类
+class views_v1_1 (views_v1_0.Views_v1_0):
     def __init__(self):
-        print "调用子类构造方法"
+        views_v1_1.callCount += 1
+        print "ViewsV1_1", views_v1_1.callCount
+
