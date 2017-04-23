@@ -38,10 +38,15 @@ class Views_v1_0:
         if dict.has_key('username') and dict.has_key('password'):
             user = query.login(dict['username'], dict['password'])
             if user:
-                return jsonify({'status': 1, 'user_id': user.user_id, 'data': {'points': user.points}})
+                return jsonify({'status': 1,
+                                'user_id': user.user_id,
+                                'data': {'points': user.points}})
         else:
             return jsonify(errorCode.parameterError())
 
+
+    def config(self):
+        print "config"
 
     def handlePostData(self):
         if request.method == 'POST':

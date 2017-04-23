@@ -24,3 +24,4 @@ class views_v1_1 (views_v1_0.Views_v1_0):
         views_v1_1.callCount += 1
         print "ViewsV1_1", views_v1_1.callCount
 
+
