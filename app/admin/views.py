@@ -22,6 +22,7 @@ def index():
 @admin.route('/addtable')
 def addTable():
     init_db()
+    return "addTable"
 
 #更新公私钥
 @admin.route('/updatersakey')

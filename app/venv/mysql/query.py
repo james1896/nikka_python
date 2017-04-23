@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import random
+
 from .model import User,Order
 from .model import UserBehaviourStatistics
 from app.config import  db_session
@@ -67,21 +69,36 @@ def userCounts():
 
 #注册接口
 #
-def register(name,pwd):
+def register(name,pwd,uuid = None,device = None):
     # user_id = ticks%10000*100000*1000+1*1000
     today = datetime.datetime.now()
-    u = User(name = name, pwd= pwd,user_id=int(time.time()))
+# 00000 000 000
+
+    first = int(time.time())/100000
+    second = int(random.uniform(0, 99))
+    third = int(time.time())%100000%1000
+
+    times = first*1000000 + second*1000 + third
+
+    print times,'first:',first,'second',second,'third',third
+    print 'uuids',uuid
+    u = User(name = name, pwd= pwd,user_id=str(times))
+    u.uuid = uuid
+    u.device = device
+
+    print 'uuid',uuid
     u.last_time = today
     try:
         db_session.add(u)
         db_session.commit()
         return u
     except Exception,e:
+        print "用户名 重复" , e
         return None
 
 #登录接口
 #
-def login(name,pwd):
+def login(name,pwd,uuid=None,device=None):
     try:
         u = User.query.filter(User.name==name).first()
     except Exception, e:
@@ -91,6 +108,8 @@ def login(name,pwd):
         if u.pwd == pwd:
             # points = User.query.filter(User.i==name).first()
             u.last_time = datetime.datetime.now()
+            u.uuid = uuid
+            u.device = device
             db_session.add(u)
             db_session.commit()
             return u

@@ -14,6 +14,8 @@ from app.venv.rsa.rsaCipher import random_generator
 from . import client
 from ..venv.mysql import query
 
+from ..venv.error import errorCode
+
 
 @client.route('/')
 def index():
@@ -120,11 +122,12 @@ def record(user_id):
 @client.route('/register', methods=['POST'])
 def register():
     dict = handlePostData()
-    if dict.has_key('username') and dict.has_key('password'):
-        user = query.register(dict['username'], dict['password'])
+    print "dict",dict
+    if dict.has_key('username') and dict.has_key('password') and dict.has_key('uuid'):
+        user = query.register(dict['username'], dict['password'],dict['uuid'],dict['device'])
         if user:
             return jsonify({'status': 1, 'user_id': user.user_id})
-    return jsonify({'status': 2})
+    return jsonify(errorCode.registeUsernameRepeat())
 
 
 ###########################    login    #############################################
@@ -133,8 +136,10 @@ def register():
 @client.route('/login', methods=['POST'])
 def login():
     dict = handlePostData()
-    if dict.has_key('username') and dict.has_key('password'):
-        user = query.login(dict['username'], dict['password'])
+
+    # 对key值抛异常处理
+    if dict.has_key('username') and dict.has_key('password') and dict.has_key('uuid'):
+        user = query.login(dict['username'], dict['password'],dict['uuid'],dict['device'])
         if user:
             return jsonify({'status': 1, 'user_id': user.user_id, 'data': {'points': user.points}})
     return jsonify({'status': -1})

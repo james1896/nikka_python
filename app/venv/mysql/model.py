@@ -19,19 +19,27 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True)
     pwd = Column(String(120), unique=False)
-    user_id = Column(Integer, unique=True)
+    user_id = Column(String(40), unique=True)
     email = Column(String(120), unique=False)
     points = Column(Float, unique=False)
     last_time = Column(DateTime,unique=False)
 
+    status = Column(Integer, unique=False)
+    uuid = Column(String(120), unique=False)
+    device = Column(String(50), unique=False)
+
 
     def __init__(self, name=None,pwd=None,user_id=None):
-        self.name = name
-        self.pwd = pwd
-        self.user_id = user_id
-        self.email = None
-        self.points = 0.0
-        self.last_time = None
+        self.name       = name
+        self.pwd        = pwd
+        self.user_id    = user_id
+        self.email      = None
+        self.points     = 0.0
+        self.last_time  = None
+
+        self.status     = 0
+        self.uuid       ='uuid'
+        self.device     ='device'
 
 
 

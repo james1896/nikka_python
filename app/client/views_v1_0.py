@@ -16,7 +16,6 @@ def login():
     views = Views_v1_0()
     json = views.login()
     return json
-    # return jsonify({'status': -1})
 
 
 
@@ -24,21 +23,22 @@ def login():
 
 class Views_v1_0:
 
-    callCount = 0
+    __callCount = 0
 
     def __init__(self):
         print "调用父类构造函数"
-        Views_v1_0.callCount+= 1
-        print "ViewsV1_0", Views_v1_0.callCount
+        Views_v1_0.__callCount += 1
+        print "ViewsV1_0", Views_v1_0.__callCount
 
 
     def login(self):
         print "login"
-        dict = self.handlePostData()
-        if dict.has_key('username') and dict.has_key('password'):
-            user = query.login(dict['username'], dict['password'])
-            if user:
-                return jsonify({'status': 1,
+        d = self.handlePostData()
+        if isinstance(d,dict):
+            if d.has_key('username') and d.has_key('password') :
+                user = query.login(d['username'], d['password'])
+                if user:
+                    return jsonify({'status': 1,
                                 'user_id': user.user_id,
                                 'data': {'points': user.points}})
         else:
@@ -58,5 +58,5 @@ class Views_v1_0:
             # jsonn --> dictt
             dict = json.loads(value)
             return dict
-        else:
-            return {errorCode.requestethodsError()}
+        # else:
+        #     return {errorCode.requestethodsError()}
