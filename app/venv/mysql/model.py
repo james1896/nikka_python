@@ -8,8 +8,6 @@ from sqlalchemy import Float, ForeignKey
 from sqlalchemy import Column, Integer, String
 
 
-
-
 #########################   User表结构    #####################################################
 
 

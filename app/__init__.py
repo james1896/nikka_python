@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask
-
 from app.config import init_db
 from app.config import db_session
 
 app = Flask(__name__)
-
 from .admin import admin as admin_blurprint
 from .client import client as  client_blurprint
 from .client import client_v1_0 as  client_v1_0_blurprint
@@ -22,12 +20,13 @@ app.register_blueprint(client_blurprint,url_prefix='/client')
 app.register_blueprint(client_v1_0_blurprint,url_prefix='/client_v1_0')
 app.register_blueprint(client_v1_1_blurprint,url_prefix='/client_v1_1')
 
-
+# if __name__ == '__main__':
+#     print "app"
 
 @app.route('/')
 def index():
     #初始化数据库（如果没有旧创建 ，如果有就忽略）
-
+    from .venv.timer import scheduler
     return 'Nikka/ app'
 
 
