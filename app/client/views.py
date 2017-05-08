@@ -157,7 +157,7 @@ def test():
 def test1():
     if request.method == 'POST':
         paras = request.form.get('test')
-        return jsonify({'test':paras})
+        return jsonify({'test1':paras})
     else:
         return jsonify({'test1':'test1'})
 
