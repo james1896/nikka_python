@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-
+import hashlib
 import json,os
+
+import datetime
 from flask import jsonify, Response, send_from_directory
 from flask import request
 from werkzeug.utils import secure_filename
@@ -123,11 +125,11 @@ def record(user_id):
 def register():
     dict = handlePostData()
     print "dict",dict
-    if dict.has_key('username') and dict.has_key('password') and dict.has_key('uuid'):
-        user = query.register(dict['username'], dict['password'],dict['uuid'],dict['device'])
+    if dict.has_key('username') and dict.has_key('password'):
+        user = query.register(dict['username'], dict['password'],"")
         if user:
-            return jsonify({'status': 1, 'user_id': user.user_id})
-    return jsonify(errorCode.registeUsernameRepeat())
+            return jsonify({'status': 1, 'userToken':getToken(),'user_id': user.user_id})
+    return jsonify({errorCode.statusCode:errorCode.valueRSAIsWrong})
 
 
 ###########################    login    #############################################
@@ -135,15 +137,45 @@ def register():
 
 @client.route('/login', methods=['POST'])
 def login():
-    dict = handlePostData()
+    value = handlePostData()
 
+    if isinstance(value,dict):
     # 对key值抛异常处理
-    if dict.has_key('username') and dict.has_key('password') and dict.has_key('uuid'):
-        user = query.login(dict['username'], dict['password'],dict['uuid'],dict['device'])
-        if user:
-            return jsonify({'status': 1, 'user_id': user.user_id, 'data': {'points': user.points}})
+        if value.has_key('username') and value.has_key('password'):
+            user = query.login(value['username'], value['password'],'','')
+            if user:
+                return jsonify({'status': errorCode.trueCode, 'userToken':getToken(),'user_id': user.user_id, 'data': {'points': user.points}})
+    else:
+        return jsonify({errorCode.statusCode:errorCode.valueRSAIsWrong})
     return jsonify({'status': -1})
 
+
+def getToken():
+    import sys
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+
+    # 生成token
+    now_date = datetime.datetime.now()
+    print 'now_date' , now_date
+
+    # hash对象
+    hash_token = hashlib.md5()
+
+    # token字符串
+    token = "flask中文论坛" +\
+            str(now_date.year) +\
+            str(now_date.month) + \
+            str(now_date.day) +\
+            str(now_date.hour) + \
+            str(now_date.minute)
+
+    print 'token' , token
+    hash_token.update(token.encode('utf-8'))
+    # 获得加密串
+    token = hash_token.hexdigest()
+    print 'token' , token
+    return token
 
 ############################    test    #############################################
 #带加密的
@@ -161,6 +193,7 @@ def test1():
     else:
         return jsonify({'test1':'test1'})
 
+
 ############################    test    #############################################
 
 def handlePostData():
@@ -168,11 +201,52 @@ def handlePostData():
         # 得到前端 post 过来的 json字符串
         # data = json.dumps(request.form.get('value'))
         # data为字典类型
-        value = rsaCipher.decryptionWithString(request.form.get('value'), random_generator)
 
+
+
+        if request.form.get('value') == None:
+            return errorCode.valueRSAIsWrong
+
+        value = rsaCipher.decryptionWithString(request.form.get('value'), random_generator)
+        print 'handlePostData',value
         # jsonn --> dictt
         dict = json.loads(value)
         return dict
+
+
+@client.route('/helloworld')
+def helloworld():
+    import sys
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+
+    # 生成token
+    now_date = datetime.datetime.now()
+    print 'now_date' , now_date
+
+    # hash对象
+    hash_token = hashlib.md5()
+
+    # token字符串
+    # token = "flask中文论坛" +\
+    #         str(now_date.year) +\
+    #         str(now_date.month) + \
+    #         str(now_date.day) +\
+    #         str(now_date.hour) + \
+    #         str(now_date.minute)
+
+    token = "flask中文论坛" + \
+            str(now_date.year) + \
+            str(now_date.month) + \
+            str(now_date.day) + \
+            str(now_date.hour)
+
+    print 'token' , token
+    hash_token.update(token.encode('utf-8'))
+    # 获得加密串
+    token = hash_token.hexdigest()
+    print 'token' , token
+    return jsonify({"token":token})
 
 @app.route('/add/<name>/<pwd>')
 def add(name, pwd):

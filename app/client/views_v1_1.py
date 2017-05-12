@@ -2,7 +2,7 @@
 from flask import jsonify
 
 from app import db_session
-from app.venv import cacheRedis
+# from app.venv import cacheRedis
 from app.venv.mysql.model import User
 from . import views_v1_0
 from . import client_v1_1
@@ -20,7 +20,8 @@ def test1():
 
 @client_v1_1.route('/test')
 def test():
-    return jsonify({"test":cacheRedis.objForKey("test")})
+    return "s"
+    # return jsonify({"test":cacheRedis.objForKey("test")})
 
 
 

@@ -81,12 +81,11 @@ def register(name,pwd,uuid = None,device = None):
     times = first*1000000 + second*1000 + third
 
     print times,'first:',first,'second',second,'third',third
-    print 'uuids',uuid
     u = User(name = name, pwd= pwd,user_id=str(times))
     u.uuid = uuid
     u.device = device
 
-    print 'uuid',uuid
+    # print 'uuid',uuid
     u.last_time = today
     try:
         db_session.add(u)
