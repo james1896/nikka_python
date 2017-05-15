@@ -1,28 +1,179 @@
 # -*- coding: utf-8 -*-
-import hashlib
+
 import json,os
-
-import datetime
-from flask import jsonify, Response, send_from_directory
-from flask import request
-from werkzeug.utils import secure_filename
-
 from app import app
+from . import client
+from flask import request
+from ..venv.mysql import query
 from app.config import db_session
 from app.templates import sqlmodel
 from app.venv.rsa import rsaCipher
+from ..venv.statuscode import status_code
+from ..venv.token import tokenHandle
+from werkzeug.utils import secure_filename
 from app.venv.rsa.rsaCipher import random_generator
+from flask import jsonify, Response, send_from_directory
 
-from . import client
-from ..venv.mysql import query
 
-from ..venv.error import errorCode
+####################    积分转赠    ##############################################
+# 积分转赠
+
+@client.route('/pointgift/<sponsor>/<received>/<point>', methods=['GET', 'POST'])
+def pointgift(sponsor, received, point):
+    print query.pointGift(sponsor, received, point)
+    return jsonify({'we': 'heihei'})
+
+
+####################    积分转赠    ##############################################
+
+@client.route('/points', methods=['POST'])
+def points():
+    if request.method == 'POST':
+        name = request.form['username']
+        para = request.form['paras']
+        u = sqlmodel.points(name, para)
+        print '积分:', u.points
+        if u:
+            return jsonify({'points': u.points})
+        else:
+            return jsonify({'points': 2})
+    return jsonify({'points': -1})
+
+
+@client.route('/record/<user_id>', methods=['GET', 'POST'])
+def record(user_id):
+    sqlmodel.record(user_id)
+    return jsonify({'status': 1})
+
+
+###########################    register    #############################################
+
+
+@client.route('/register', methods=['POST'])
+def register():
+    dict = handlePostData()
+    print "dict",dict
+    if dict.has_key('username') and dict.has_key('password'):
+        user = query.register(dict['username'], dict['password'],"")
+        if user:
+            return jsonify({'status': 1,
+                            'userToken':tokenHandle.getToken(),
+                            'user_id': user.user_id})
+    return jsonify({status_code.statusCode:status_code.valueRSAIsWrong})
+
+
+###########################    login    #############################################
+
+
+@client.route('/login', methods=['POST'])
+def login():
+    # http是否为post
+    if request.method != 'POST':
+        return jsonify({status_code.statusCode: status_code.http_type_get})
+
+    # rsa参数是否为空
+    value = request.form.get("value")
+    if value == None:
+        return jsonify({status_code.statusCode: status_code.valueRSAIsWrong})
+
+    decodeStr = decryption(request.form.get('value'))
+    # jsonn --> dictt
+    value_dict = json.loads(decodeStr)
+
+    if isinstance(value_dict,dict):
+    # 对key值抛异常处理
+        if value_dict.has_key('username') and value_dict.has_key('password'):
+            user = query.login(value_dict['username'], value_dict['password'],'','')
+            if user:
+                return jsonify({'status': status_code.trueCode,
+                                'userToken':tokenHandle.getToken(),
+                                'data': {'points': user.points,
+                                         'user_id': user.user_id}})
+            else:
+                return jsonify({status_code.statusCode:status_code.login_return_null})
+        else:
+            return jsonify({status_code.statusCode:status_code.parameter_key_wrong})
+    else:
+        return jsonify({status_code.statusCode:status_code.valueRSAIsWrong})
+
+############################    test    #############################################
+
+
+#带加密的
+@client.route('/test',methods=['POST'])
+def test():
+
+    # http是否为post
+    if request.method != 'POST':
+        return jsonify({status_code.statusCode: status_code.http_type_get})
+
+    # rsa参数是否为空
+    value = request.form.get("value")
+    if value == None:
+        return jsonify({status_code.statusCode:status_code.valueRSAIsWrong})
+
+    decodeStr = decryption(request.form.get('value'))
+    # jsonn --> dictt
+    dict = json.loads(decodeStr)
+    return jsonify({'test':dict['aa']})
+
+#不带加密的
+@client.route('/test1',methods=["GET",'POST'])
+def test1():
+    if request.method == 'POST':
+        paras = request.form.get('test')
+        return jsonify({'test1':paras})
+    else:
+        return jsonify({'test1':'test1'})
+
+
+############################    test    #############################################
+
+def handlePostData():
+    handle_http_type()
+    # 得到前端 post 过来的 json字符串
+    # data = json.dumps(request.form.get('value'))
+    # data为字典类型
+
+    # 判断rsa加密的参数 是否为空
+    request_value_rsa('value')
+    # rsa解密
+    value = decryption(request.form.get('value'))
+    # jsonn --> dictt
+    dict = json.loads(value)
+    return dict
+
+def decryption(encode_value):
+    return rsaCipher.decryptionWithString(encode_value, random_generator)
+
+# 判断请求类型
+def handle_http_type():
+    # if request.method == 'POST':
+    #     return status_code.http_type_post
+    # if request.method == 'GET':
+    #     return status_code.http_type_get
+    if request.method != 'POST':
+        return jsonify({status_code.statusCode:status_code.http_type_get})
+
+# 判断post过来的参数 是否为空
+def request_value_rsa(value):
+    if request.form.get(value) == None:
+        return status_code.valueRSAIsWrong
+
+@client.route('/helloworld')
+def helloworld():
+    return jsonify({"token":tokenHandle.getToken()})
 
 
 @client.route('/')
 def index():
     return "hello client"
 
+
+
+
+############################    服务器 image     #############################################
+############################    服务器 image     #############################################
 ############################    服务器 image     #############################################
 
 ##上传图片到服务器
@@ -83,170 +234,16 @@ def getImage(imageid):
     # with open('image/' + str(imageid) + '.jpg') as f:
     #     return Response(f.read(), mimetype='image/jpeg')
 
-############################    服务器 image    #############################################
+
+
+###########################################################################################
+###########################################################################################
+###########################################################################################
 
 
 
-####################    积分转赠    ##############################################
-# 积分转赠
+##############################       怀旧      #############################################
 
-@client.route('/pointgift/<sponsor>/<received>/<point>', methods=['GET', 'POST'])
-def pointgift(sponsor, received, point):
-    print query.pointGift(sponsor, received, point)
-    return jsonify({'we': 'heihei'})
-
-
-####################    积分转赠    ##############################################
-
-@client.route('/points', methods=['POST'])
-def points():
-    if request.method == 'POST':
-        name = request.form['username']
-        para = request.form['paras']
-        u = sqlmodel.points(name, para)
-        print '积分:', u.points
-        if u:
-            return jsonify({'points': u.points})
-        else:
-            return jsonify({'points': 2})
-    return jsonify({'points': -1})
-
-
-@client.route('/record/<user_id>', methods=['GET', 'POST'])
-def record(user_id):
-    sqlmodel.record(user_id)
-    return jsonify({'status': 1})
-
-
-###########################    register    #############################################
-
-
-@client.route('/register', methods=['POST'])
-def register():
-    dict = handlePostData()
-    print "dict",dict
-    if dict.has_key('username') and dict.has_key('password'):
-        user = query.register(dict['username'], dict['password'],"")
-        if user:
-            return jsonify({'status': 1, 'userToken':getToken(),'user_id': user.user_id})
-    return jsonify({errorCode.statusCode:errorCode.valueRSAIsWrong})
-
-
-###########################    login    #############################################
-
-
-@client.route('/login', methods=['POST'])
-def login():
-    value = handlePostData()
-
-    if isinstance(value,dict):
-    # 对key值抛异常处理
-        if value.has_key('username') and value.has_key('password'):
-            user = query.login(value['username'], value['password'],'','')
-            if user:
-                return jsonify({'status': errorCode.trueCode, 'userToken':getToken(),'user_id': user.user_id, 'data': {'points': user.points}})
-    else:
-        return jsonify({errorCode.statusCode:errorCode.valueRSAIsWrong})
-    return jsonify({'status': -1})
-
-
-def getToken():
-    import sys
-    reload(sys)
-    sys.setdefaultencoding('utf8')
-
-    # 生成token
-    now_date = datetime.datetime.now()
-    print 'now_date' , now_date
-
-    # hash对象
-    hash_token = hashlib.md5()
-
-    # token字符串
-    token = "flask中文论坛" +\
-            str(now_date.year) +\
-            str(now_date.month) + \
-            str(now_date.day) +\
-            str(now_date.hour) + \
-            str(now_date.minute)
-
-    print 'token' , token
-    hash_token.update(token.encode('utf-8'))
-    # 获得加密串
-    token = hash_token.hexdigest()
-    print 'token' , token
-    return token
-
-############################    test    #############################################
-#带加密的
-@client.route('/test',methods=['POST'])
-def test():
-    dict = handlePostData()
-    return jsonify({'aa':dict['aa']})
-
-#不带加密的
-@client.route('/test1',methods=["GET",'POST'])
-def test1():
-    if request.method == 'POST':
-        paras = request.form.get('test')
-        return jsonify({'test1':paras})
-    else:
-        return jsonify({'test1':'test1'})
-
-
-############################    test    #############################################
-
-def handlePostData():
-    if request.method == 'POST':
-        # 得到前端 post 过来的 json字符串
-        # data = json.dumps(request.form.get('value'))
-        # data为字典类型
-
-
-
-        if request.form.get('value') == None:
-            return errorCode.valueRSAIsWrong
-
-        value = rsaCipher.decryptionWithString(request.form.get('value'), random_generator)
-        print 'handlePostData',value
-        # jsonn --> dictt
-        dict = json.loads(value)
-        return dict
-
-
-@client.route('/helloworld')
-def helloworld():
-    import sys
-    reload(sys)
-    sys.setdefaultencoding('utf8')
-
-    # 生成token
-    now_date = datetime.datetime.now()
-    print 'now_date' , now_date
-
-    # hash对象
-    hash_token = hashlib.md5()
-
-    # token字符串
-    # token = "flask中文论坛" +\
-    #         str(now_date.year) +\
-    #         str(now_date.month) + \
-    #         str(now_date.day) +\
-    #         str(now_date.hour) + \
-    #         str(now_date.minute)
-
-    token = "flask中文论坛" + \
-            str(now_date.year) + \
-            str(now_date.month) + \
-            str(now_date.day) + \
-            str(now_date.hour)
-
-    print 'token' , token
-    hash_token.update(token.encode('utf-8'))
-    # 获得加密串
-    token = hash_token.hexdigest()
-    print 'token' , token
-    return jsonify({"token":token})
 
 @app.route('/add/<name>/<pwd>')
 def add(name, pwd):

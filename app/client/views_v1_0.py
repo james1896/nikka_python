@@ -5,7 +5,7 @@ from app.venv.mysql import query
 from app.venv.rsa import rsaCipher
 from app.venv.rsa.rsaCipher import random_generator
 from . import client_v1_0
-from ..venv.error import errorCode
+from ..venv.statuscode import status_code
 
 @client_v1_0.route('/')
 def index():
@@ -42,7 +42,7 @@ class Views_v1_0:
                                 'user_id': user.user_id,
                                 'data': {'points': user.points}})
         else:
-            return jsonify(errorCode.parameterError())
+            return jsonify(status_code.parameterError())
 
 
     def config(self):
