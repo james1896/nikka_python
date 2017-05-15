@@ -29,9 +29,9 @@ def getToken():
             str(now_date.day) + \
             str(now_date.hour)
 
-    print 'token', token
+    # print 'token', token
     hash_token.update(token.encode('utf-8'))
     # 获得加密串
     token = hash_token.hexdigest()
-    print 'tokenHandle: ', token
+    # print 'tokenHandle: ', token
     return token

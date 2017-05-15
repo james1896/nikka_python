@@ -80,15 +80,23 @@ def login():
     # jsonn --> dictt
     value_dict = json.loads(decodeStr)
 
+    # 解密rsa数据后，操作c
+    return_json = login_data_handle(value_dict)
+    print "login接口 返回json数据:\n", return_json
+    return return_json
+
+def login_data_handle(value_dict):
     if isinstance(value_dict,dict):
     # 对key值抛异常处理
         if value_dict.has_key('username') and value_dict.has_key('password'):
             user = query.login(value_dict['username'], value_dict['password'],'','')
             if user:
-                return jsonify({'status': status_code.trueCode,
+                return_json = {'status': status_code.trueCode,
                                 'userToken':tokenHandle.getToken(),
                                 'data': {'points': user.points,
-                                         'user_id': user.user_id}})
+                                         'user_id': user.user_id}}
+
+                return jsonify(return_json)
             else:
                 return jsonify({status_code.statusCode:status_code.login_return_null})
         else:
