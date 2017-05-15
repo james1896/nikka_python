@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import random
 
-from .model import User,Order
+from app.venv.statuscode import status_code
+from .model import User, Order, FeedBack
 from .model import UserBehaviourStatistics
 from app.config import  db_session
 
@@ -61,11 +62,21 @@ def userCounts():
     return count
 
 
-###########################################   master    ####################################################
-###########################################   master    ####################################################
-###########################################   master    ####################################################
-###########################################   master    ####################################################
+################################################################################################################
+################################################################################################################
+################################################################################################################
+################################################################################################################
 
+def feedback(user_id,content):
+    today = datetime.datetime.now()
+    feed = FeedBack(today,content,user_id)
+    try:
+        db_session.add(feed)
+        db_session.commit()
+        return status_code.trueCode
+    except Exception, e:
+        print "feedback", e
+        return status_code.query_feedback_failure
 
 #注册接口
 #
@@ -137,7 +148,7 @@ def pointGift(sponsor,received,point):
             return
     return -1
 
-##################################################################
+##################################################################################
 
 def test():
     behaviour = UserBehaviourStatistics(login_time=datetime.datetime.now(),user_id=1)

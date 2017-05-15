@@ -88,7 +88,7 @@ class Order(Base):
     def __repr__(self):
         return '%s (%r, %r)' % (self.__class__.__name__, self.user_id, self.goods_name)
 
-        #########################   用户行为统计 表结构    #####################################################
+#########################   用户行为统计 表结构    #####################################################
 #用户行为统计
 class UserBehaviourStatistics(Base):
     __tablename__ = 'behstatistics'
@@ -102,8 +102,8 @@ class UserBehaviourStatistics(Base):
         self.user_id = user_id
 
 #########################   用户设备管理 表结构    #####################################################
-class UserDeviceManager(Base):
-    __tablename__ = 'userDeviceManager'
+class Userbehaviour(Base):
+    __tablename__ = 'user_behaviour'
 
     id          = Column(Integer, primary_key=True)
     bind_time   = Column(DateTime, unique=False)
@@ -115,3 +115,18 @@ class UserDeviceManager(Base):
         self.bind_time = bind_time
         self.user_id = user_id
         self.uuid = uuid;
+
+
+#########################   用户反馈 表结构    #####################################################
+class FeedBack(Base):
+    __tablename__ = 'feedback'
+    id      = Column(Integer, primary_key=True)
+    time    = Column(DateTime, unique=False)
+    content = Column(String(500), unique=False)
+
+    user_id = Column(Integer, ForeignKey('users.id'))
+
+    def __init__(self,time = None,content = None,user_id = None):
+        self.time       = time
+        self.content    = content
+        self.user_id    = user_id

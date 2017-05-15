@@ -15,6 +15,22 @@ from app.venv.rsa.rsaCipher import random_generator
 from flask import jsonify, Response, send_from_directory
 
 
+
+####################    feedback    ##############################################
+@client.route('/feedback',methods=['POST'])
+def feedback():
+    # http是否为post
+    if request.method != 'POST':
+        return jsonify({status_code.statusCode: status_code.http_type_get})
+
+    userID = request.form.get("user_id")
+    content = request.form.get("content")
+    if userID == None or content == None:
+        return jsonify({status_code.statusCode:status_code.parameter_none})
+
+    # 这里userID需要传入 外键 是否合理？
+    return jsonify({status_code.statusCode:query.feedback(1,content)})
+
 ####################    积分转赠    ##############################################
 # 积分转赠
 
@@ -48,19 +64,43 @@ def record(user_id):
 
 ###########################    register    #############################################
 
-
 @client.route('/register', methods=['POST'])
 def register():
-    dict = handlePostData()
-    print "dict",dict
-    if dict.has_key('username') and dict.has_key('password'):
-        user = query.register(dict['username'], dict['password'],"")
-        if user:
-            return jsonify({'status': 1,
-                            'userToken':tokenHandle.getToken(),
-                            'user_id': user.user_id})
-    return jsonify({status_code.statusCode:status_code.valueRSAIsWrong})
+    # http是否为post
+    if request.method != 'POST':
+        return jsonify({status_code.statusCode: status_code.http_type_get})
 
+    # rsa参数是否为空
+    value = request.form.get("value")
+    if value == None:
+        return jsonify({status_code.statusCode: status_code.valueRSAIsWrong})
+
+    # 解密成string
+    decodeStr = decryption(request.form.get('value'))
+    # jsonn --> dictt
+    value_dict = json.loads(decodeStr)
+
+    # 解密rsa数据后，操作
+    return_json = register_data_handle(value_dict)
+    print "register接口 返回json数据:\n", return_json
+    return return_json
+
+
+def register_data_handle(value_dict):
+    if isinstance(value_dict,dict):
+    # 对key值抛异常处理
+        if value_dict.has_key('username') and value_dict.has_key('password'):
+            user = query.register(value_dict['username'], value_dict['password'],'')
+            if user:
+                return jsonify(({'status': status_code.trueCode,
+                                'userToken': tokenHandle.getToken(),
+                                'data': {'user_id': user.user_id}}))
+            else:
+                return jsonify({status_code.statusCode:status_code.register_return_null})
+        else:
+            return jsonify({status_code.statusCode:status_code.parameter_key_wrong})
+    else:
+        return jsonify({status_code.statusCode:status_code.valueRSAIsWrong})
 
 ###########################    login    #############################################
 
@@ -76,11 +116,12 @@ def login():
     if value == None:
         return jsonify({status_code.statusCode: status_code.valueRSAIsWrong})
 
+    # 解密成string
     decodeStr = decryption(request.form.get('value'))
     # jsonn --> dictt
     value_dict = json.loads(decodeStr)
 
-    # 解密rsa数据后，操作c
+    # 解密rsa数据后，操作
     return_json = login_data_handle(value_dict)
     print "login接口 返回json数据:\n", return_json
     return return_json
@@ -129,7 +170,7 @@ def test():
 @client.route('/test1',methods=["GET",'POST'])
 def test1():
     if request.method == 'POST':
-        paras = request.form.get('test')
+        paras = request.form.get('test1')
         return jsonify({'test1':paras})
     else:
         return jsonify({'test1':'test1'})
