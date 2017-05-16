@@ -20,7 +20,7 @@ class User(Base):
     user_id = Column(String(40), unique=True)
     email = Column(String(120), unique=False)
     points = Column(Float, unique=False)
-    last_time = Column(DateTime,unique=False)
+    first_time = Column(DateTime,unique=False)
 
     status = Column(Integer, unique=False)
     uuid = Column(String(120), unique=False)
@@ -33,7 +33,7 @@ class User(Base):
         self.user_id    = user_id
         self.email      = None
         self.points     = 0.0
-        self.last_time  = None
+        self.first_time  = None
 
         self.status     = 0
         self.uuid       ='uuid'
@@ -106,15 +106,20 @@ class Userbehaviour(Base):
     __tablename__ = 'user_behaviour'
 
     id          = Column(Integer, primary_key=True)
-    bind_time   = Column(DateTime, unique=False)
+    username    = Column(String(20), unique=False)
+    last_time   = Column(DateTime, unique=False)
     uuid        = Column(String(120), unique=False)
+    device      = Column(String(50), unique=False)
+    ip          = Column(String(20), unique=False)
 
-    user_id     = Column(Integer, ForeignKey('users.id'))
+    # user_id     = Column(Integer, ForeignKey('users.id'))
 
-    def __init__(self, bind_time=None, user_id=None,uuid=None):
-        self.bind_time = bind_time
-        self.user_id = user_id
-        self.uuid = uuid;
+    def __init__(self, last_time=None, username=None,uuid=None,device=None):
+
+        self.username    = username
+        self.last_time  = last_time
+        self.uuid       = uuid
+        self.device     = device
 
 
 #########################   用户反馈 表结构    #####################################################

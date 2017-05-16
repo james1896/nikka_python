@@ -15,6 +15,40 @@ from app.venv.rsa.rsaCipher import random_generator
 from flask import jsonify, Response, send_from_directory
 
 
+####################    userInfo    ##############################################
+
+# 针对username加密
+@client.route('/userinfo',methods=['POST'])
+def userinfo():
+    # http是否为post
+    if request.method != 'POST':
+        return jsonify({status_code.statusCode: status_code.http_type_get})
+
+
+    uuid = request.form.get("uuid")
+    device = request.form.get("device")
+
+    # rsa参数是否为空
+    value = request.form.get("value")
+    if value != None:
+        # 解密成string
+        decodeStr = decryption(request.form.get('value'))
+        # jsonn --> dictt
+        value_dict = json.loads(decodeStr)
+        return jsonify({status_code.statusCode: query.userinfo(value_dict['username'], uuid, device)})
+    else:
+        return jsonify({status_code.statusCode: query.userinfo("", uuid, device)})
+
+
+    # # 解密rsa数据后，操作
+    # return_json = userinfo_data_handle(value_dict,uuid,device)
+    # print "userInfo接口 返回json数据:\n", return_json
+    # return return_json
+
+
+def userinfo_data_handle(value_dict,uuid,device):
+    if value_dict.has_key('username'):
+        return jsonify({status_code.statusCode:query.userinfo(value_dict['username'],uuid,device)})
 
 ####################    feedback    ##############################################
 @client.route('/feedback',methods=['POST'])

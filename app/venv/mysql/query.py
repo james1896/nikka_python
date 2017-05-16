@@ -3,7 +3,7 @@ import random
 
 from app.venv.statuscode import status_code
 from .model import User, Order, FeedBack
-from .model import UserBehaviourStatistics
+from .model import Userbehaviour
 from app.config import  db_session
 
 import datetime,time
@@ -67,6 +67,19 @@ def userCounts():
 ################################################################################################################
 ################################################################################################################
 
+def userinfo(name,uuid,device):
+    today = datetime.datetime.now()
+    info = Userbehaviour(today,name,uuid,device)
+    try:
+        db_session.add(info)
+        db_session.commit()
+        return status_code.trueCode
+    except Exception, e:
+        print "userinfo", e
+    return status_code.query_userinfo_failure
+
+
+# 意见反馈
 def feedback(user_id,content):
     today = datetime.datetime.now()
     feed = FeedBack(today,content,user_id)
@@ -149,22 +162,22 @@ def pointGift(sponsor,received,point):
     return -1
 
 ##################################################################################
-
-def test():
-    behaviour = UserBehaviourStatistics(login_time=datetime.datetime.now(),user_id=1)
-    try:
-        db_session.add(behaviour)
-        db_session.commit()
-    except Exception, e:
-        print 'wrong'
-
-def loginTime(user_id):
-    behaviour = UserBehaviourStatistics(login_time=datetime.datetime.now(), user_id=user_id)
-    try:
-        db_session.add(behaviour)
-        db_session.commit()
-    except Exception, e:
-        print ''
+#
+# def test():
+#     behaviour = UserBehaviourStatistics(login_time=datetime.datetime.now(),user_id=1)
+#     try:
+#         db_session.add(behaviour)
+#         db_session.commit()
+#     except Exception, e:
+#         print 'wrong'
+#
+# def loginTime(user_id):
+#     behaviour = UserBehaviourStatistics(login_time=datetime.datetime.now(), user_id=user_id)
+#     try:
+#         db_session.add(behaviour)
+#         db_session.commit()
+#     except Exception, e:
+#         print ''
 
 
     # for i in range(0,1000000):

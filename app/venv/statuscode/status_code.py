@@ -35,4 +35,6 @@ register_return_null    = 4001
 # 意见反馈插入数据库失败
 query_feedback_failure  = 700
 
+query_userinfo_failure  = 701
+
 
