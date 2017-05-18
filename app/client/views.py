@@ -17,6 +17,49 @@ from flask import jsonify, Response, send_from_directory
 # 用户相关配置
 config = {"a":"bb"}
 
+
+####################    find order    ##############################################
+
+@client.route('/findorder',methods=['POST'])
+def findorder():
+
+    # http是否为post
+    if request.method != 'POST':
+        return jsonify({status_code.statusCode: status_code.http_type_get})
+
+        # rsa参数是否为空
+    value = request.form.get("value")
+    print 'value',value
+    if value != None:
+        # 解密成string
+        decodeStr = decryption(request.form.get('value'))
+        # jsonn --> dictt
+        value_dict = json.loads(decodeStr)
+
+        # user_id --> id
+        user_id = value_dict['user_id']
+        if(user_id == None):
+            return jsonify({status_code.statusCode:status_code.query_findorder_id_null})
+
+        id = query.getid(user_id)
+
+        # get order
+        orders = query.findOrder(id)
+
+        # if result is null
+        if(orders == status_code.query_findorder_failure):
+            return jsonify({status_code.statusCode:orders})
+
+        # create data
+        list = []
+        for order in orders:
+            dict = {}
+            dict['name'] = order.goods_name
+            dict['time'] = order.deal_time
+            dict['price']= order.deal_Prce
+            list.append(dict)
+        return jsonify({status_code.statusCode:status_code.trueCode,'data':list})
+
 ####################    userInfo    ##############################################
 
 # 针对username加密
@@ -125,9 +168,10 @@ def register_data_handle(value_dict):
         if value_dict.has_key('username') and value_dict.has_key('password'):
             user = query.register(value_dict['username'], value_dict['password'],'')
             if user:
-                return jsonify(({'status': status_code.trueCode,
-                                'userToken': tokenHandle.getToken(),
-                                'data': {'user_id': user.user_id}}))
+                return jsonify(({status_code.statusCode: status_code.trueCode,
+
+                                'data': {'userToken': tokenHandle.getToken(),
+                                         'user_id': user.user_id}}))
             else:
                 return jsonify({status_code.statusCode:status_code.register_return_null})
         else:
@@ -165,9 +209,10 @@ def login_data_handle(value_dict):
         if value_dict.has_key('username') and value_dict.has_key('password'):
             user = query.login(value_dict['username'], value_dict['password'],'','')
             if user:
-                return_json = {'status': status_code.trueCode,
-                                'userToken':tokenHandle.getToken(),
+                return_json = {status_code.statusCode: status_code.trueCode,
+
                                 'data': {'points': user.points,
+                                         'userToken':tokenHandle.getToken(),
                                          'user_id': user.user_id}}
 
                 return jsonify(return_json)

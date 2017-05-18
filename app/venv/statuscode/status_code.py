@@ -37,4 +37,7 @@ query_feedback_failure  = 700
 
 query_userinfo_failure  = 701
 
+query_findorder_failure  = 702
+query_findorder_id_null  = 703
+
 

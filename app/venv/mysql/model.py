@@ -88,19 +88,6 @@ class Order(Base):
     def __repr__(self):
         return '%s (%r, %r)' % (self.__class__.__name__, self.user_id, self.goods_name)
 
-#########################   用户行为统计 表结构    #####################################################
-#用户行为统计
-class UserBehaviourStatistics(Base):
-    __tablename__ = 'behstatistics'
-
-    id          = Column(Integer, primary_key=True)
-    login_time  = Column(DateTime, unique=False)
-    user_id     = Column(Integer, ForeignKey('users.id'))
-
-    def __init__(self,login_time=None,user_id=None):
-        self.login_time = login_time
-        self.user_id = user_id
-
 #########################   用户设备管理 表结构    #####################################################
 class Userbehaviour(Base):
     __tablename__ = 'user_behaviour'

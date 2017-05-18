@@ -67,6 +67,21 @@ def userCounts():
 ################################################################################################################
 ################################################################################################################
 
+def getid(user_id):
+    user = User.query.filter(User.user_id == user_id).first()
+    return user.id
+
+def findOrder(user_id):
+    try:
+        # order = Order.query.filter(Order.user_id == user_id).all()
+        order = Order.query.filter(Order.user_id == user_id).limit(10)
+        return order
+    except Exception,e:
+        print "findOrder",e
+        return status_code.query_findorder_failure
+
+
+# 用户信息收集
 def userinfo(name,uuid,device):
     today = datetime.datetime.now()
     info = Userbehaviour(today,name,uuid,device)
