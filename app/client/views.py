@@ -2,6 +2,7 @@
 
 import json,os
 from app import app
+from app.venv.mysql.model import User
 from . import client
 from flask import request
 from ..venv.mysql import query
@@ -110,26 +111,61 @@ def feedback():
 ####################    积分转赠    ##############################################
 # 积分转赠
 
-@client.route('/pointgift/<sponsor>/<received>/<point>', methods=['GET', 'POST'])
-def pointgift(sponsor, received, point):
-    print query.pointGift(sponsor, received, point)
-    return jsonify({'we': 'heihei'})
+@client.route('/transforpoints', methods=['GET', 'POST'])
+def pointgift():
+    # http是否为post
+    if request.method != 'POST':
+        return jsonify({status_code.statusCode: status_code.http_type_get})
+
+        # rsa参数是否为空
+    value = request.form.get("value")
+    if value == None:
+        return jsonify({status_code.statusCode: status_code.valueRSAIsWrong})
+
+     # 解密成string
+    decodeStr = decryption(request.form.get('value'))
+    # jsonn --> dictt
+    value_dict = json.loads(decodeStr)
+
+    points = request.form.get("points")
+    sponsor = value_dict['user_id']
+    received = value_dict['friend_name']
+    return jsonify({status_code.statusCode:query.transformpoint(sponsor, received, points)})
 
 
-####################    积分转赠    ##############################################
+####################    积分更新    ##############################################
 
-@client.route('/points', methods=['POST'])
+# paras=0 表示查询积分
+
+@client.route('/updatepoints', methods=['POST'])
 def points():
-    if request.method == 'POST':
-        name = request.form['username']
-        para = request.form['paras']
-        u = sqlmodel.points(name, para)
+    # http是否为post
+    if request.method != 'POST':
+        return jsonify({status_code.statusCode: status_code.http_type_get})
+
+     # rsa参数是否为空
+    value = request.form.get("value")
+    if value == None:
+        return jsonify({status_code.statusCode: status_code.valueRSAIsWrong})
+
+     # 解密成string
+    decodeStr = decryption(value)
+    # jsonn --> dictt
+    value_dict = json.loads(decodeStr)
+
+    userid = value_dict['user_id']
+
+    positive_points = int(request.form['positive_points'])
+    negative_points = int(request.form['negative_points'])
+
+    u = query.update_points(userid, positive_points,negative_points)
+
+    if isinstance(u,User):
         print '积分:', u.points
-        if u:
-            return jsonify({'points': u.points})
-        else:
-            return jsonify({'points': 2})
-    return jsonify({'points': -1})
+        return jsonify({status_code.statusCode:status_code.trueCode,
+                            'data':{'points': u.points}})
+    else:
+        return jsonify({status_code.statusCode:u})
 
 
 @client.route('/record/<user_id>', methods=['GET', 'POST'])

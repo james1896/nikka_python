@@ -37,7 +37,26 @@ query_feedback_failure  = 700
 
 query_userinfo_failure  = 701
 
+# 订单
 query_findorder_failure  = 702
 query_findorder_id_null  = 703
+
+
+# 更新积分
+
+query_points_update_failure = 705
+query_points_update_error = 706
+query_points_select_success = 707
+query_points_select_failure = 708
+query_update_points_parameter_error = 709
+
+# 积分转赠
+
+# 转赠发起人查询失败
+query_points_transform_sponsor_failuret = 710
+# 转赠接收人用户名查询失败
+query_points_transform_received_failuret = 711
+query_points_transform_success = 712
+query_points_transform_failuret = 713
 
 

@@ -9,6 +9,7 @@ from sqlalchemy import MetaData
 from sqlalchemy import Table
 
 from app.config import  db_session
+from app.venv.statuscode import status_code
 
 from ..venv.mysql.model import User,Order
 
@@ -50,30 +51,7 @@ def addOrder(deal_Prce,goods_name):
         return 0
     return 1
 
-###########################    更新积分接口    #############################################
-#
 
-#如果paras ＝ 0 表示查询当前积分
-#如果paras > 0 表示更改当前积分
-def points(name,paras):
-    if int(paras) == 0:
-        try:
-            u = User.query.filter(User.name == name).first()
-            print 'userName:',u.name,'积分',u.points
-        except Exception, e:
-            return 'there isnot %s' % name
-        return u
-
-    if int(paras) > 0:
-        try:
-            u = User.query.filter(User.name == name).first()
-            u.points = paras
-            db_session.commit()
-        except Exception, e:
-            return 'there isnot %s' % name
-        return u
-
-##################################################################
 
 
 NEW_COLUMN_NAME = 'last_logintime'
