@@ -74,7 +74,7 @@ def getid(user_id):
 def findOrder(user_id):
     try:
         # order = Order.query.filter(Order.user_id == user_id).all()
-        order = Order.query.filter(Order.user_id == user_id).limit(10)
+        order = Order.query.filter(Order.user_id == user_id).limit(20)
         return order
     except Exception,e:
         print "findOrder",e
@@ -113,13 +113,21 @@ def register(name,pwd,uuid = None,device = None):
     today = datetime.datetime.now()
 # 00000 000 000
 
-    first = int(time.time())/100000
-    second = int(random.uniform(0, 99))
-    third = int(time.time())%100000%1000
 
-    times = first*1000000 + second*1000 + third
+    first = int(time.time())/1000000%1000
 
-    print times,'first:',first,'second',second,'third',third
+
+    second = int(time.time())/1000%1000
+
+
+    third =  int(time.time())%1000
+
+
+    times = first*10000000 + second*10000 + third*10 - 3950000000 + int(random.uniform(0, 9))
+
+    print "second",time.time(),id,times,'first:',first,'second',second,'third',third
+
+    # user_id为十位
     u = User(name = name, pwd= pwd,user_id=str(times))
     u.uuid = uuid
     u.device = device
