@@ -43,10 +43,10 @@ def historyForCurrentDay():
     return histroyLoginInfo('day', day);
 
 
-# period   mounth,day,year
+# period   month,day,year
 # number    12   31  2017
 def histroyLoginInfo(period, number):
-    historys = User.query.filter(extract(period, User.last_time) == number).all()
+    historys = Userbehaviour.query.filter(extract(period, Userbehaviour.last_time) == number).all()
     return historys
 
 
@@ -55,7 +55,7 @@ def allPoints():
     # 当前时间
     # print db_session.query(func.now()).scalar()
     # msyql sum方法
-    return db_session.query(func.sum(Order.deal_Prce)).scalar()
+    return db_session.query(func.sum(User.points)).scalar()
 
 
 # 查询user表中有多少用户

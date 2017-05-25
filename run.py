@@ -5,4 +5,4 @@ app.debug = False
 
 print "run  调用了两次需要修改"
 
-app.run(host="0.0.0.0", port=8001)
+app.run(host="0.0.0.0", debug=True, port=8001)
