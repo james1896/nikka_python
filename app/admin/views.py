@@ -25,7 +25,15 @@ def index():
 
 
 
-
+# 得到当前顾客的登录情况
+# interval = 1 day  当天登录用户数量
+# interval = 2 mounth 当月登录用户数量
+#
+# interval = 0  返回 当天和当月
+# {
+#   "day": 2,
+#   "month": 4
+# }
 @admin.route('/curusers',methods=['POST'])
 def usersAt():
     # day = int(request.form['day'])
@@ -34,8 +42,6 @@ def usersAt():
 
     i = datetime.datetime.now()
     print ("当前的年份是 %s" % i.year)
-
-
 
     # interval = 1 day
     # interval = 2 mounth
