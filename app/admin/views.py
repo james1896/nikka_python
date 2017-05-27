@@ -21,6 +21,7 @@ from ..venv.mysql import query
 #这里要注意是admin.route (即对应蓝图的名称)
 @admin.route('/')
 def index():
+    from ..venv.timer import scheduler
     return "hello admin"
 
 
@@ -44,7 +45,7 @@ def usersAt():
     print ("当前的年份是 %s" % i.year)
 
     # interval = 1 day
-    # interval = 2 mounth
+    # interval = 2 month
     paras1 = "day"
     paras2 = "%s" %i.day
     if interval == '2':
@@ -56,8 +57,6 @@ def usersAt():
         day = query.histroyLoginInfo('day', i.day)
         month = query.histroyLoginInfo('month', i.month)
         return jsonify({'day':len(day),'month':len(month)})
-
-
 
     behs = query.histroyLoginInfo(paras1,paras2)
     return jsonify({"count":len(behs)})

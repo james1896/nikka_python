@@ -5,7 +5,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 from app.config import db_session
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from app.venv import cacheRedis
+# from app.venv import cacheRedis
 from app.venv.mysql.model import User
 
 
@@ -21,7 +21,7 @@ def add_points():
         # user.points = user.points + 1
         # db_session.commit()
 
-        cacheRedis.setObject("test",user.points)
+        # cacheRedis.setObject("test",user.points)
     except:
         print "except"
     # now = str(datetime.datetime.now())
@@ -29,20 +29,25 @@ def add_points():
 
 
 # 接下来定义一个间隔n长时间循环执行任务
-scheduler.add_job(
-    func            = add_points,
-    trigger         = IntervalTrigger(seconds = 10),
-    id              ='add_points',
-    replace_existing=True)
-
-
 # scheduler.add_job(
-#     func=add_points,
-#     trigger='cron',
-#     month = '1-12',
-#     hour = '14',
-#     minute = '29'
-# )
+#     func            = add_points,
+#     trigger         = IntervalTrigger(seconds = 10),
+#     id              ='add_points',
+#     replace_existing=True)
+
+def loginusersAtOneDay():
+
+    from ..mysql import query
+
+    print "loginusersAtOneDay:",len(query.getloginsAtOneDay())
+
+scheduler.add_job(
+    func=loginusersAtOneDay,
+    trigger='cron',
+    month = '1-12',
+    hour = '15',
+    minute = '25'
+)
 
 
 atexit.register(lambda:scheduler.shutdown())
