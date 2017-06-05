@@ -122,3 +122,84 @@ class FeedBack(Base):
         self.time       = time
         self.content    = content
         self.user_id    = user_id
+        
+        
+#########################   用户行为统计（分三个表）   #####################################################
+    #     用户行为记录
+    #     // func_id
+    #     页面id
+    #     CREATE
+    #     TABLE
+    #     t_behavior_log(
+    #         id
+    #     INT
+    #     NOT
+    #     NULL
+    #     AUTO_INCREMENT,
+    #     user_id
+    #     VARCHAR(20),
+    #     func_id
+    #     INT,
+    #     begin_time
+    #     DATE,
+    #     duration
+    #     INT,
+    #     end_time
+    #     DATE,
+    #     PRIMARY
+    #     KEY(id)
+    #     )ENGINE = InnoDB
+    #     DEFAULT
+    #     CHARSET = utf8;
+    #
+    # 用户行为历史记录（每天同步
+    # 用户行为记录）
+    # CREATE
+    # TABLE
+    # t_
+    # history_behavior_log(
+    #     id
+    # INT
+    # NOT
+    # NULL
+    # AUTO_INCREMENT,
+    # user_id
+    # VARCHAR(20),
+    # func_id
+    # INT,
+    # begin_time
+    # DATE,
+    # duration
+    # INT,
+    # end_time
+    # DATE,
+    # PRIMARY
+    # KEY(id)
+    # )ENGINE = InnoDB
+    # DEFAULT
+    # CHARSET = utf8;
+    #
+    # 统计表（包括天、月、年统计）
+    # // report_type
+    # 统计类型：按天统计
+    # 按月统计
+    # 按年统计
+    # CREATE
+    # TABLE
+    # t_report(
+    #     id
+    # INT
+    # NOT
+    # NULL
+    # AUTO_INCREMENT,
+    # func_id
+    # INT,
+    # report_type
+    # INT,
+    # duration
+    # INT,
+    # PRIMARY
+    # KEY(user_id)
+    # )ENGINE = InnoDB
+    # DEFAULT
+    # CHARSET = utf8;
