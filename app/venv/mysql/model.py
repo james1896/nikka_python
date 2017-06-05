@@ -98,6 +98,7 @@ class Userbehaviour(Base):
     uuid        = Column(String(120), unique=False)
     device      = Column(String(50), unique=False)
     ip          = Column(String(20), unique=False)
+    app_version = Column(String(10), unique=False)
 
     # user_id     = Column(Integer, ForeignKey('users.id'))
 
