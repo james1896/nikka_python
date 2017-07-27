@@ -374,6 +374,26 @@ def getimg():
         # 这个文件对象还拥有一个属性来提取文件名，叫做filename
         # file.save(os.path.join(UPLOAD_FOLDER, file.filename))
         file.save(os.path.join(UPLOAD_FOLDER, 'fileName.png'))
+        
+        
+        
+        
+          # --------------------------------------------------------------------------
+        # 获取文件和文件夹大小 (tyte)
+        # --------------------------------------------------------------------------
+        # import os
+        # from os.path import join, getsize
+        # 使用os.path.getsize函数，参数是文件的路径     获取文件大小 (bytes)
+
+
+        # def getdirsize(dir):
+        #     size = 0L
+        #     for root, dirs, files in os.walk(dir):
+        #         size += sum([getsize(join(root, name)) for name in files])
+        #     return size
+        # --------------------------------------------------------------------------
+        
+        
         return jsonify({'a':'b'})
 
 
